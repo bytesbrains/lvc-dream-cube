@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LVC Dream Cube: Play Beyond Sight</title>
-  <meta name="description" content="An open-source tactile puzzle cube. Each colour has its own 3D-printed texture, so every face can be recognised by touch, not only sight. Free print files and a Kickstarter coming soon.">
+  <meta name="description" content="An open-source tactile puzzle cube. Each colour has its own 3D-printed texture, so every face can be recognised by touch, not only sight. Free print files, and a Kickstarter campaign live now.">
   <meta name="theme-color" content="#fff8ee">
   <link rel="icon" href="img/lvc-logo.png">
   <link rel="canonical" href="https://bytesbrains.github.io/lvc-dream-cube/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="LVC Dream Cube: Play Beyond Sight">
-  <meta property="og:description" content="A colourful puzzle cube you can also solve by touch. Open-source 3D print files, Kickstarter coming soon.">
+  <meta property="og:description" content="A colourful puzzle cube you can also solve by touch. Open-source 3D print files, and a Kickstarter campaign live now.">
   <meta property="og:url" content="https://bytesbrains.github.io/lvc-dream-cube/">
   <meta property="og:image" content="https://bytesbrains.github.io/lvc-dream-cube/img/lvc-dream-poster.jpg">
   <meta name="twitter:card" content="summary_large_image">
@@ -122,6 +122,11 @@
     .ks ul { padding-left: 1.2em; margin: 0; }
     .ks li { margin-bottom: .5em; }
     .ks .lede { color: inherit; opacity: .9; }
+    .ks-embeds { display: grid; grid-template-columns: 1fr 220px; gap: 24px; align-items: start; margin-top: clamp(32px, 5vw, 48px); }
+    @media (max-width: 820px) { .ks-embeds { grid-template-columns: 1fr; justify-items: center; } }
+    .ks-video { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 18px; overflow: hidden; background: rgba(0,0,0,.25); }
+    .ks-video iframe { width: 100%; height: 100%; border: 0; display: block; }
+    .ks-card { width: 220px; height: 420px; max-width: 100%; border: 0; border-radius: 12px; background: #fff; display: block; }
 
     .partners { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: 24px 0 0; }
     .partners li { border: 2px solid var(--line); border-radius: 999px; padding: 8px 16px; font-weight: 600; background: var(--surface); }
@@ -156,8 +161,7 @@
           <h1>A puzzle cube you can solve by touch.</h1>
           <p class="lede">Every colour on the LVC Dream Cube has its own 3D tactile pattern, so each face can be recognised by touch, not only sight.</p>
           <div class="btns">
-            <!-- When the campaign is live, point this at the Kickstarter URL. -->
-            <a class="btn primary" href="#kickstarter">Kickstarter <span class="pill">Coming soon</span></a>
+            <a class="btn primary" href="https://www.kickstarter.com/projects/bytesbrains/lvc-dream-cube-the-puzzle-cube-you-can-solve-in-the-dark">Back it on Kickstarter <span class="pill">Live now</span></a>
             <a class="btn" href="https://github.com/bytesbrains/lvc-dream-cube">Free print files</a>
           </div>
         </div>
@@ -301,11 +305,11 @@
       <div class="wrap">
         <div class="ks split">
           <div>
-            <p class="eyebrow" style="color:inherit;opacity:.8">Kickstarter · Coming soon</p>
+            <p class="eyebrow" style="color:inherit;opacity:.8">Kickstarter · Live now</p>
             <h2 id="ks-h">Help us take it from a 3D printer to thousands of hands.</h2>
             <p class="lede">A glued-on prototype proves the idea. We're raising funds to test it properly with the people it's meant for, and to make it well.</p>
             <div class="btns">
-              <a class="btn primary" href="mailto:hello@littlevoice.club?subject=Notify%20me%3A%20LVC%20Dream%20Cube%20Kickstarter">Notify me at launch</a>
+              <a class="btn primary" href="https://www.kickstarter.com/projects/bytesbrains/lvc-dream-cube-the-puzzle-cube-you-can-solve-in-the-dark">Back the project</a>
               <a class="btn" href="https://github.com/bytesbrains/lvc-dream-cube/subscription">Watch on GitHub</a>
             </div>
           </div>
@@ -318,6 +322,12 @@
               <li>Accessible packaging and instructions, including braille and audio.</li>
               <li>Keeping every design file open and free.</li>
             </ul>
+          </div>
+          <div class="ks-embeds" style="grid-column: 1 / -1">
+            <div class="ks-video">
+              <iframe src="https://www.kickstarter.com/projects/bytesbrains/lvc-dream-cube-the-puzzle-cube-you-can-solve-in-the-dark/widget/video.html" title="LVC Dream Cube Kickstarter video" loading="lazy" scrolling="no" allowfullscreen></iframe>
+            </div>
+            <iframe class="ks-card" src="https://www.kickstarter.com/projects/bytesbrains/lvc-dream-cube-the-puzzle-cube-you-can-solve-in-the-dark/widget/card.html?v=2" title="LVC Dream Cube on Kickstarter" loading="lazy" scrolling="no"></iframe>
           </div>
         </div>
       </div>

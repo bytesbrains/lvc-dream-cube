@@ -1,0 +1,65 @@
+window.TIMINGS = [
+  {
+    "who": "meera",
+    "scene": "dark",
+    "text": "[whispers] Close your eyes.",
+    "start": 0.08,
+    "end": 1.12
+  },
+  {
+    "who": "arjun",
+    "scene": "dark",
+    "text": "[curious] Okay... closed.",
+    "start": 1.94,
+    "end": 3.5
+  },
+  {
+    "who": "meera",
+    "scene": "dark",
+    "text": "Which side is red?",
+    "start": 4.38,
+    "end": 5.28
+  },
+  {
+    "who": "arjun",
+    "scene": "dark",
+    "text": "[laughs] No idea!",
+    "start": 6.46,
+    "end": 7.16
+  },
+  {
+    "who": "meera",
+    "scene": "feel",
+    "text": "Feel it. The rings... are red.",
+    "start": 8.039,
+    "end": 11.04
+  },
+  {
+    "who": "arjun",
+    "scene": "feel",
+    "text": "[surprised] Wait... dots are blue. And this dome... yellow!",
+    "start": 11.96,
+    "end": 15.62
+  },
+  {
+    "who": "meera",
+    "scene": "key",
+    "text": "[warmly] Every colour has its own texture.",
+    "start": 16.58,
+    "end": 18.6
+  },
+  {
+    "who": "arjun",
+    "scene": "who",
+    "text": "[thoughtful] So blind and low-vision kids can solve it by touch... and I can play it with the lights off.",
+    "start": 19.54,
+    "end": 24.82
+  },
+  {
+    "who": "meera",
+    "scene": "end",
+    "text": "LVC Dream Cube. [excited] Back us on Kickstarter!",
+    "start": 25.86,
+    "end": 28.74
+  }
+];

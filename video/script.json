@@ -1,0 +1,129 @@
+{
+  "model_id": "eleven_v3",
+  "voices": {
+    "arjun": "slBGJQemxngiq6a5p79P",
+    "meera": "aQvy1p8iPYKU1riodNwU"
+  },
+  "lines": [
+    {
+      "who": "meera",
+      "scene": "dark",
+      "text": "[curious] Arjun... close your eyes for a second."
+    },
+    {
+      "who": "arjun",
+      "scene": "dark",
+      "text": "[laughs softly] Okay. They're closed."
+    },
+    {
+      "who": "meera",
+      "scene": "dark",
+      "text": "Now tell me... which side is red?"
+    },
+    {
+      "who": "arjun",
+      "scene": "dark",
+      "text": "[short pause] Hmm... [sighs] I can't. Without my eyes, it's just... plastic."
+    },
+    {
+      "who": "meera",
+      "scene": "problem",
+      "text": "[thoughtful] One in twelve boys sees colour differently. And some kids can't see colour at all. The world's favourite puzzle... was only ever made for eyes."
+    },
+    {
+      "who": "arjun",
+      "scene": "problem",
+      "text": "[curious] So what if the colours... could be felt?"
+    },
+    {
+      "who": "meera",
+      "scene": "reveal",
+      "text": "[warmly] That's the LVC Dream Cube. Every colour gets its own texture. White is smooth. Green has a raised frame. Orange... ridges."
+    },
+    {
+      "who": "arjun",
+      "scene": "key",
+      "text": "[surprised] Wait, these are rings. So this is... red?"
+    },
+    {
+      "who": "meera",
+      "scene": "key",
+      "text": "[laughs] Red. Blue is dots. And yellow is..."
+    },
+    {
+      "who": "arjun",
+      "scene": "key",
+      "text": "[excited] The big dome! I found it without looking!"
+    },
+    {
+      "who": "meera",
+      "scene": "classroom",
+      "text": "Now a child who mixes up red and green never has to guess again. And blind and low-vision kids can solve it by touch... right next to their friends."
+    },
+    {
+      "who": "arjun",
+      "scene": "night",
+      "text": "[thoughtful] And for the rest of us?"
+    },
+    {
+      "who": "meera",
+      "scene": "night",
+      "text": "[softly] Lights off. Phone down. Just you, the cube and your fingertips... before sleep."
+    },
+    {
+      "who": "arjun",
+      "scene": "night",
+      "text": "[whispers] A puzzle... in the dark."
+    },
+    {
+      "who": "meera",
+      "scene": "prototype",
+      "text": "Right now it's a prototype. 3D-printed chips, glued onto an ordinary cube. It works... but it isn't ready yet."
+    },
+    {
+      "who": "arjun",
+      "scene": "prototype",
+      "text": "So that's where backers come in."
+    },
+    {
+      "who": "meera",
+      "scene": "funds",
+      "text": "[earnestly] Yes. We'll test it with the kids it's meant for, make durable moulded chips, and add braille and audio instructions."
+    },
+    {
+      "who": "arjun",
+      "scene": "price",
+      "text": "And schools and NGOs get it for under ten dollars a cube."
+    },
+    {
+      "who": "meera",
+      "scene": "price",
+      "text": "Twenty-four ninety-nine for you... and every cube helps put one in a classroom."
+    },
+    {
+      "who": "arjun",
+      "scene": "open",
+      "text": "[curious] And the design files?"
+    },
+    {
+      "who": "meera",
+      "scene": "open",
+      "text": "Free. Open source. For everyone."
+    },
+    {
+      "who": "arjun",
+      "scene": "end",
+      "text": "[short pause] [thoughtful] So one small change... and a toy made for eyes becomes a toy made for everyone."
+    },
+    {
+      "who": "meera",
+      "scene": "end",
+      "text": "[warmly] LVC Dream Cube. See it. Feel it. Solve it."
+    },
+    {
+      "who": "arjun",
+      "scene": "end",
+      "text": "[excited] Back us on Kickstarter."
+    }
+  ]
+}

@@ -4,8 +4,10 @@
 
 Each colour on the cube gets its own 3D tactile pattern, so every face can be recognised through touch, not only sight. We 3D-printed small pattern chips and glued them onto an ordinary 3×3 puzzle cube. That's the whole trick, and this repo has everything you need to make one.
 
-🌐 **Landing page:** https://bytesbrains.github.io/lvc-dream-cube/
-🚀 **Kickstarter:** coming soon (watch or star this repo to hear when it goes live)
+🏠 **Little Voice Club:** https://www.littlevoice.club (the home of LVC Dream, which runs and backs this project)  
+🌐 **Landing page:** https://bytesbrains.github.io/lvc-dream-cube/  
+🚀 **Kickstarter:** [LVC Dream Cube on Kickstarter](https://www.kickstarter.com/projects/bytesbrains/lvc-dream-cube-the-puzzle-cube-you-can-solve-in-the-dark): **live now!** Back it, or share it with someone who would love it.  
+📣 **Follow @LittleVoiceClub:** [X](https://x.com/LittleVoiceClub) · [Instagram](https://www.instagram.com/littlevoiceclub/) · [YouTube](https://www.youtube.com/@LittleVoiceClub)
 
 <p align="center">
   <img src="docs/img/cube-scrambled.jpg" alt="A scrambled LVC Dream Cube. Every coloured square carries a raised chip: grey dots, yellow domes, red rings, green frames, orange ridges and smooth white." width="420">
@@ -17,7 +19,7 @@ Each colour on the cube gets its own 3D tactile pattern, so every face can be re
 - **Blind and visually impaired players:** the whole puzzle can be explored and solved by touch.
 - **Everyone else:** close your eyes or play in the dark, and it turns into a new challenge of touch, spatial memory and focus.
 
-The LVC Dream Cube is the first prototype from **LVC Dream**, the accessibility vision inside [Little Voice Club](https://littlevoice.club). We don't want to build a separate little world of "accessible products". We want the things everyone already loves (toys, games, learning tools, art materials) to work for more people through thoughtful design.
+The LVC Dream Cube is the first prototype from **LVC Dream**, the accessibility vision inside [Little Voice Club](https://www.littlevoice.club). We don't want to build a separate little world of "accessible products". We want the things everyone already loves (toys, games, learning tools, art materials) to work for more people through thoughtful design.
 
 ## The tactile key
 

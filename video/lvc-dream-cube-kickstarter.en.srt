@@ -1,0 +1,163 @@
+1
+00:00:00,140 --> 00:00:02,500
+Meera: Arjun... close your eyes for a second.
+
+2
+00:00:03,620 --> 00:00:05,060
+Arjun: Okay. They're closed.
+
+3
+00:00:05,820 --> 00:00:06,765
+Meera: Now tell me...
+
+4
+00:00:06,765 --> 00:00:07,980
+Meera: which side is red?
+
+5
+00:00:08,860 --> 00:00:10,179
+Arjun: Hmm... I can't.
+
+6
+00:00:10,179 --> 00:00:13,520
+Arjun: Without my eyes, it's just... plastic.
+
+7
+00:00:14,500 --> 00:00:16,920
+Meera: One in twelve boys sees colour differently.
+
+8
+00:00:16,920 --> 00:00:19,059
+Meera: And some kids can't see colour at all.
+
+9
+00:00:19,059 --> 00:00:20,804
+Meera: The world's favourite puzzle...
+
+10
+00:00:20,804 --> 00:00:22,380
+Meera: was only ever made for eyes.
+
+11
+00:00:23,140 --> 00:00:24,614
+Arjun: So what if the colours...
+
+12
+00:00:24,614 --> 00:00:25,440
+Arjun: could be felt?
+
+13
+00:00:26,140 --> 00:00:28,085
+Meera: That's the LVC Dream Cube.
+
+14
+00:00:28,085 --> 00:00:30,627
+Meera: Every colour gets its own texture.
+
+15
+00:00:30,627 --> 00:00:31,824
+Meera: White is smooth.
+
+16
+00:00:31,824 --> 00:00:35,040
+Meera: Green has a raised frame. Orange... ridges.
+
+17
+00:00:35,580 --> 00:00:38,460
+Arjun: Wait, these are rings. So this is... red?
+
+18
+00:00:39,540 --> 00:00:41,096
+Meera: Red. Blue is dots.
+
+19
+00:00:41,096 --> 00:00:42,480
+Meera: And yellow is...
+
+20
+00:00:42,880 --> 00:00:45,180
+Arjun: The big dome! I found it without looking!
+
+21
+00:00:45,980 --> 00:00:50,223
+Meera: Now a child who mixes up red and green never has to guess again.
+
+22
+00:00:50,223 --> 00:00:53,804
+Meera: And blind and low-vision kids can solve it by touch...
+
+23
+00:00:53,804 --> 00:00:55,660
+Meera: right next to their friends.
+
+24
+00:00:56,120 --> 00:00:57,180
+Arjun: And for the rest of us?
+
+25
+00:00:57,860 --> 00:00:59,558
+Meera: Lights off. Phone down.
+
+26
+00:00:59,558 --> 00:01:03,620
+Meera: Just you, the cube and your fingertips... before sleep.
+
+27
+00:01:04,260 --> 00:01:05,920
+Arjun: A puzzle... in the dark.
+
+28
+00:01:06,540 --> 00:01:08,325
+Meera: Right now it's a prototype.
+
+29
+00:01:08,325 --> 00:01:12,159
+Meera: 3D-printed chips, glued onto an ordinary cube. It works...
+
+30
+00:01:12,159 --> 00:01:13,680
+Meera: but it isn't ready yet.
+
+31
+00:01:14,280 --> 00:01:15,660
+Arjun: So that's where backers come in.
+
+32
+00:01:16,260 --> 00:01:23,020
+Meera: Yes. We'll test it with the kids it's meant for, make durable moulded chips, and add braille and audio instructions.
+
+33
+00:01:23,500 --> 00:01:26,580
+Arjun: And schools and NGOs get it for under ten dollars a cube.
+
+34
+00:01:27,320 --> 00:01:29,159
+Meera: Twenty-four ninety-nine for you...
+
+35
+00:01:29,159 --> 00:01:31,540
+Meera: and every cube helps put one in a classroom.
+
+36
+00:01:32,120 --> 00:01:33,340
+Arjun: And the design files?
+
+37
+00:01:33,940 --> 00:01:36,520
+Meera: Free. Open source. For everyone.
+
+38
+00:01:37,180 --> 00:01:38,494
+Arjun: So one small change...
+
+39
+00:01:38,494 --> 00:01:41,840
+Arjun: and a toy made for eyes becomes a toy made for everyone.
+
+40
+00:01:42,480 --> 00:01:46,420
+Meera: LVC Dream Cube. See it. Feel it. Solve it.
+
+41
+00:01:47,160 --> 00:01:48,220
+Arjun: Back us on Kickstarter.

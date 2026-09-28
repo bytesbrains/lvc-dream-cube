@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dream Cube Reward Art</title>
+<style>
+  html, body { margin: 0; background: #fff8ee; }
+  body { font-family: system-ui, sans-serif; }
+  #art { width: 1044px; height: 696px; display: block; }
+</style>
+</head>
+<body>
+<!--
+  Illustrated reward images for the Kickstarter reward tiers and items.
+  Open with ?scene=<name> (see SCENES below). Each scene is a 1044x696 (3:2) SVG.
+  No text is drawn: Kickstarter asks reward images to avoid overlaid text.
+-->
+<svg id="art" viewBox="0 0 1044 696" xmlns="http://www.w3.org/2000/svg"></svg>
+<script>
+const COLORS = { white: "#f4f1ea", green: "#1f9d55", orange: "#f07a1a", red: "#d7263d", blue: "#1f6fd1", yellow: "#f5c518" };
+const TEX = { white: "smooth", green: "frame", orange: "ridges", red: "rings", blue: "dots", yellow: "dome" };
+const ORDER = ["white", "green", "orange", "red", "blue", "yellow"];
+const PLUM = "#5b2a86", INK = "#1d1a2e", CREAM = "#fff8ee";
+
+function relief(t) {
+  switch (t) {
+    case "frame": return `<rect x="24" y="24" width="52" height="52" rx="6" fill="none" stroke-width="9" STROKE/>`;
+    case "ridges": { let s = ""; for (let k = -60; k <= 100; k += 15) s += `<line x1="${k}" y1="100" x2="${k + 100}" y2="0" stroke-width="6" STROKE/>`; return `<g clip-path="url(#chipclip)">${s}</g>`; }
+    case "rings": return `<circle cx="50" cy="50" r="10" fill="none" stroke-width="6" STROKE/><circle cx="50" cy="50" r="22" fill="none" stroke-width="6" STROKE/><circle cx="50" cy="50" r="34" fill="none" stroke-width="6" STROKE/>`;
+    case "dots": { let s = ""; for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) s += `<circle cx="${26 + i * 16}" cy="${26 + j * 16}" r="5.4" FILL/>`; return s; }
+    default: return "";
+  }
+}
+function chipBody(c) {
+  const col = COLORS[c], t = TEX[c];
+  let b = `<rect x="4" y="4" width="92" height="92" rx="14" fill="${col}"/><rect x="10" y="10" width="80" height="80" rx="12" fill="${col}" stroke="rgba(0,0,0,.18)" stroke-width="1.5"/>`;
+  if (t === "dome") b += `<circle cx="52" cy="53" r="27" fill="rgba(0,0,0,.28)"/><circle cx="50" cy="50" r="26" fill="${col}"/><circle cx="50" cy="50" r="26" fill="url(#domeg)"/>`;
+  else if (t !== "smooth") {
+    const r = relief(t);
+    b += '<g transform="translate(1.6 1.6)">' + r.replaceAll("STROKE", 'stroke="rgba(0,0,0,.32)"').replaceAll("FILL", 'fill="rgba(0,0,0,.32)"') + "</g>";
+    b += '<g transform="translate(-1 -1)">' + r.replaceAll("STROKE", 'stroke="rgba(255,255,255,.55)"').replaceAll("FILL", 'fill="rgba(255,255,255,.55)"') + "</g>";
+    b += r.replaceAll("STROKE", `stroke="${col}"`).replaceAll("FILL", `fill="${col}"`);
+  }
+  return b + `<rect x="10" y="10" width="80" height="80" rx="12" fill="url(#gloss)"/>`;
+}
+const DEFS = `<defs>
+  <clipPath id="chipclip"><rect x="10" y="10" width="80" height="80" rx="12"/></clipPath>
+  <radialGradient id="domeg" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".35" stop-color="#fff" stop-opacity=".15"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></radialGradient>
+  <linearGradient id="gloss" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
+  <radialGradient id="glow" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <linearGradient id="pouchg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7a3fb0"/><stop offset="1" stop-color="#4a2170"/></linearGradient>
+  <filter id="soft" x="-20%" y="-20%" width="140%" height="160%"><feGaussianBlur stdDeviation="10"/></filter>
+  ${ORDER.map(c => `<symbol id="chip-${c}" viewBox="0 0 100 100">${chipBody(c)}</symbol>`).join("")}
+</defs>`;
+
+function rng(seed) { const n = () => (seed = (seed * 16807) % 2147483647) / 2147483647; for (let i = 0; i < 8; i++) n(); return n; }
+function scramble(seed) {
+  const r = rng(seed), all = ORDER.flatMap(c => Array(9).fill(c));
+  for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [all[i], all[j]] = [all[j], all[i]]; }
+  return all;
+}
+const C30 = Math.cos(Math.PI / 6), S30 = 0.5;
+// Isometric 3x3 cube. (cx, cy) is the back corner of the top face; s is the edge length.
+function isoCube(cx, cy, s, seed, opts = {}) {
+  const w = s * C30, h = s * S30, cols = scramble(seed);
+  const face = (O, A, B, list, shade) => {
+    let g = `<g transform="matrix(${A[0] / 300} ${A[1] / 300} ${B[0] / 300} ${B[1] / 300} ${O[0]} ${O[1]})">`;
+    g += `<rect x="0" y="0" width="300" height="300" rx="16" fill="#17141f"/>`;
+    list.forEach((c, k) => { const i = k % 3, j = Math.floor(k / 3); g += `<use href="#chip-${c}" x="${i * 100 + 5}" y="${j * 100 + 5}" width="90" height="90"/>`; });
+    if (shade) g += `<rect x="0" y="0" width="300" height="300" rx="16" fill="#000" opacity="${shade}"/>`;
+    return g + "</g>";
+  };
+  const shadow = opts.noShadow ? "" : `<ellipse cx="${cx}" cy="${cy + 2 * h + s + 8}" rx="${w * 1.15}" ry="${h * 0.45}" fill="#3a2a1a" opacity=".22" filter="url(#soft)"/>`;
+  return shadow +
+    face([cx, cy], [w, h], [-w, h], cols.slice(0, 9), 0) +
+    face([cx - w, cy + h], [w, h], [0, s], cols.slice(9, 18), 0.1) +
+    face([cx, cy + 2 * h], [w, -h], [0, s], cols.slice(18, 27), 0.24);
+}
+// width/height of an iso cube's bounding box for edge s
+const cubeW = s => 2 * s * C30, cubeH = s => s * 2;
+
+function chip(x, y, size, c, rot = 0) {
+  return `<g transform="translate(${x} ${y}) rotate(${rot} ${size / 2} ${size / 2})"><rect x="3" y="6" width="${size - 2}" height="${size - 2}" rx="${size * .16}" fill="#000" opacity=".16"/><use href="#chip-${c}" x="0" y="0" width="${size}" height="${size}"/></g>`;
+}
+function pouch(x, y, sc = 1) {
+  return `<g transform="translate(${x} ${y}) scale(${sc})">
+    <ellipse cx="110" cy="236" rx="120" ry="16" fill="#3a2a1a" opacity=".18" filter="url(#soft)"/>
+    <path d="M30 70 Q20 150 34 206 Q44 236 110 236 Q176 236 186 206 Q200 150 190 70 Z" fill="url(#pouchg)"/>
+    <path d="M24 64 Q110 90 196 64 L190 84 Q110 108 30 84 Z" fill="#3f1b62"/>
+    <path d="M40 76 Q110 96 180 76" stroke="#f5c518" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="2 12"/>
+    <path d="M110 92 C 96 120, 70 118, 64 140" stroke="#f5c518" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M110 92 C 124 124, 150 120, 158 146" stroke="#f5c518" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <circle cx="64" cy="144" r="8" fill="#f5c518"/><circle cx="158" cy="150" r="8" fill="#f5c518"/>
+    <path d="M40 60 Q60 30 110 34 Q160 30 180 60" fill="#4a2170"/>
+    <path d="M52 120 Q56 190 80 214" stroke="rgba(255,255,255,.12)" stroke-width="10" fill="none" stroke-linecap="round"/>
+  </g>`;
+}
+// Instruction card: braille dots + audio waves (no letters)
+function brailleCard(x, y, rot = -6, sc = 1) {
+  const cells = [[1, 0, 1, 1, 0, 0], [1, 1, 0, 0, 1, 0], [0, 1, 1, 0, 1, 1], [1, 0, 0, 1, 1, 0], [1, 1, 1, 0, 0, 1], [0, 1, 0, 1, 1, 1]];
+  let dots = "";
+  cells.forEach((cell, k) => {
+    const cxx = 34 + (k % 3) * 52, cyy = 40 + Math.floor(k / 3) * 70;
+    cell.forEach((on, d) => { const dx = (d % 2) * 16, dy = Math.floor(d / 2) * 16; dots += `<circle cx="${cxx + dx}" cy="${cyy + dy}" r="5" fill="${on ? PLUM : "#e6dcef"}"/>`; });
+  });
+  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${sc})">
+    <rect x="6" y="10" width="200" height="250" rx="14" fill="#000" opacity=".12" filter="url(#soft)"/>
+    <rect x="0" y="0" width="200" height="250" rx="14" fill="#fff"/>
+    <rect x="0" y="0" width="200" height="250" rx="14" fill="none" stroke="#eadfce" stroke-width="2"/>
+    ${dots}
+    <g transform="translate(34 186)">
+      <path d="M0 14 h14 l16 -14 v44 l-16 -14 h-14 z" fill="${INK}"/>
+      <path d="M40 8 q10 14 0 28 M52 0 q18 22 0 44" stroke="${PLUM}" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </g>
+    ${[0, 1, 2].map(i => `<rect x="${112}" y="${190 + i * 14}" width="${56 - i * 12}" height="6" rx="3" fill="#d9cfe6"/>`).join("")}
+  </g>`;
+}
+function guide(x, y, rot = 4, sc = 1) {
+  let cover = "";
+  ORDER.forEach((c, i) => { cover += `<use href="#chip-${c}" x="${30 + (i % 3) * 58}" y="${40 + Math.floor(i / 3) * 58}" width="50" height="50"/>`; });
+  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${sc})">
+    <rect x="8" y="12" width="230" height="300" rx="12" fill="#000" opacity=".14" filter="url(#soft)"/>
+    <rect x="10" y="6" width="226" height="300" rx="10" fill="#e9e1d4"/>
+    <rect x="0" y="0" width="230" height="300" rx="10" fill="${PLUM}"/>
+    <rect x="0" y="0" width="16" height="300" rx="6" fill="#4a2170"/>
+    ${cover}
+    <rect x="30" y="176" width="170" height="12" rx="6" fill="#fff" opacity=".9"/>
+    <rect x="30" y="198" width="120" height="10" rx="5" fill="#fff" opacity=".55"/>
+    <rect x="30" y="250" width="60" height="22" rx="11" fill="#f5c518"/>
+  </g>`;
+}
+function school(x, y, sc = 1) {
+  return `<g transform="translate(${x} ${y}) scale(${sc})">
+    <ellipse cx="130" cy="262" rx="150" ry="14" fill="#3a2a1a" opacity=".16" filter="url(#soft)"/>
+    <rect x="20" y="110" width="220" height="150" rx="8" fill="#fff"/>
+    <path d="M0 116 L130 30 L260 116 Z" fill="#d7263d"/>
+    <rect x="112" y="4" width="4" height="40" fill="${INK}"/><path d="M116 6 h34 l-8 9 l8 9 h-34 z" fill="#f5c518"/>
+    <circle cx="130" cy="84" r="16" fill="#fff"/><circle cx="130" cy="84" r="9" fill="none" stroke="${INK}" stroke-width="3"/>
+    ${[0, 1, 2].map(i => `<rect x="${44 + i * 64}" y="136" width="44" height="40" rx="6" fill="#bcd6f5"/>`).join("")}
+    <rect x="108" y="196" width="44" height="64" rx="6" fill="${PLUM}"/>
+    <rect x="44" y="196" width="44" height="40" rx="6" fill="#bcd6f5"/><rect x="172" y="196" width="44" height="40" rx="6" fill="#bcd6f5"/>
+  </g>`;
+}
+function heart(x, y, s = 1, col = "#d7263d") {
+  return `<path transform="translate(${x} ${y}) scale(${s})" d="M0 10 C0 -4 20 -6 24 8 C28 -6 48 -4 48 10 C48 28 24 40 24 44 C24 40 0 28 0 10 Z" fill="${col}"/>`;
+}
+function arrow(x1, y1, x2, y2) {
+  const mx = (x1 + x2) / 2, my = Math.min(y1, y2) - 70;
+  return `<path d="M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}" stroke="${PLUM}" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="4 16"/>
+    <path d="M${x2} ${y2} l-20 -4 M${x2} ${y2} l-6 -20" stroke="${PLUM}" stroke-width="6" stroke-linecap="round" transform="rotate(20 ${x2} ${y2})"/>`;
+}
+function box(x, y, w, h, d) {
+  // an open-top iso carton
+  const a = C30, b = S30;
+  return `<g transform="translate(${x} ${y})">
+    <ellipse cx="${w * a * .1}" cy="${h + d * b + 10}" rx="${(w + d) * a * .7}" ry="18" fill="#3a2a1a" opacity=".18" filter="url(#soft)"/>
+    <path d="M0 0 L${w * a} ${w * b} L${w * a} ${w * b + h} L0 ${h} Z" fill="#c8955c"/>
+    <path d="M${w * a} ${w * b} L${w * a - d * a} ${w * b + d * b} L${w * a - d * a} ${w * b + d * b + h} L${w * a} ${w * b + h} Z" fill="#b07d46" transform="translate(0 0)"/>
+  </g>`;
+}
+function bg(tint = CREAM) {
+  return `<rect width="1044" height="696" fill="${tint}"/><rect y="520" width="1044" height="176" fill="#f3e6d2"/><rect y="520" width="1044" height="3" fill="#eadcc6"/><ellipse cx="522" cy="300" rx="520" ry="300" fill="url(#glow)" opacity=".7"/>`;
+}
+
+
+// Neat single-layer grid of cubes on the table, drawn back to front.
+function isoGrid(x0, y0, s, rows, cols, seed, gap = 1.12) {
+  const w = s * C30 * gap, h = s * S30 * gap, cells = [];
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) cells.push([r, c]);
+  cells.sort((a, b) => (a[0] + a[1]) - (b[0] + b[1]));
+  return cells.map(([r, c], i) => isoCube(x0 + (c - r) * w, y0 + (c + r) * h, s, seed + i, { noShadow: true })).join("");
+}
+// Iso carton: O is the top-back corner; a = width (right), b = depth (left), H = height.
+function carton(ox, oy, a, b, H, seed) {
+  const A = [a * C30, a * S30], B = [-b * C30, b * S30];
+  const P = (x, y) => `${x.toFixed(1)},${y.toFixed(1)}`;
+  const O = [ox, oy], OA = [ox + A[0], oy + A[1]], OB = [ox + B[0], oy + B[1]], F = [OA[0] + B[0], OA[1] + B[1]];
+  const top = `<polygon points="${P(...O)} ${P(...OA)} ${P(...F)} ${P(...OB)}" fill="#dcae78" stroke="#8a5a2b" stroke-width="2" stroke-linejoin="round"/>`;
+  const left = `<polygon points="${P(...OB)} ${P(...F)} ${P(F[0], F[1] + H)} ${P(OB[0], OB[1] + H)}" fill="#c8955c" stroke="#8a5a2b" stroke-width="2" stroke-linejoin="round"/>`;
+  const right = `<polygon points="${P(...F)} ${P(...OA)} ${P(OA[0], OA[1] + H)} ${P(F[0], F[1] + H)}" fill="#a97640" stroke="#8a5a2b" stroke-width="2" stroke-linejoin="round"/>`;
+  // tape along the top seam
+  const m1 = [(O[0] + OB[0]) / 2, (O[1] + OB[1]) / 2], m2 = [(OA[0] + F[0]) / 2, (OA[1] + F[1]) / 2];
+  const tape = `<line x1="${m1[0]}" y1="${m1[1]}" x2="${m2[0]}" y2="${m2[1]}" stroke="#f3dcb4" stroke-width="16"/>`;
+  // small printed cube mark on the front-left face (colour squares, no text)
+  const cols = scramble(seed).slice(0, 9);
+  let mark = `<g transform="matrix(${A[0] / 300 * .42} ${A[1] / 300 * .42} 0 ${H / 300 * .42} ${OB[0] + A[0] * .29} ${OB[1] + A[1] * .29 + H * .29})"><rect width="300" height="300" rx="20" fill="#17141f"/>`;
+  cols.forEach((c, k) => { mark += `<rect x="${(k % 3) * 100 + 10}" y="${Math.floor(k / 3) * 100 + 10}" width="80" height="80" rx="12" fill="${COLORS[c]}"/>`; });
+  mark += "</g>";
+  return top + left + right + tape + mark;
+}
+
+const SCENES = {
+  // Tier: Dream Cube — cube + pouch + braille/audio card
+  "dream-cube": () => bg() + pouch(90, 300, 1) + brailleCard(760, 250, 7, 1) + isoCube(522, 150, 190, 11),
+  // Tier: Early Bird — same contents, with a sunrise behind
+  "early-bird": () => bg() + `<circle cx="522" cy="520" r="330" fill="#f5c518" opacity=".22"/><circle cx="522" cy="520" r="240" fill="#f07a1a" opacity=".16"/>` +
+    pouch(90, 300, 1) + brailleCard(760, 250, 7, 1) + isoCube(522, 150, 190, 11),
+  // Tier: Buy One, Give One — one cube for you, one travelling to a school
+  "buy-one-give-one": () => bg() + isoCube(250, 200, 150, 11) + arrow(420, 300, 640, 310) + heart(506, 170, 1.3) + school(700, 230, 1.05) + isoCube(650, 440, 62, 23),
+  // Tier: Give a Cube — a cube with a heart going to a school
+  "give-a-cube": () => bg() + isoCube(290, 230, 120, 23) + heart(260, 130, 1.4) + arrow(410, 330, 620, 320) + school(660, 230, 1.15),
+  // Tier: Supporter — a thank-you: heart + credit lines, one highlighted
+  "supporter": () => bg() + `<g transform="translate(300 110)">
+      <rect x="10" y="16" width="440" height="400" rx="22" fill="#000" opacity=".1" filter="url(#soft)"/>
+      <rect width="440" height="400" rx="22" fill="#fff"/>
+      <rect width="440" height="54" rx="22" fill="${INK}"/><rect y="30" width="440" height="24" fill="${INK}"/>
+      ${[0, 1, 2].map(i => `<circle cx="${30 + i * 22}" cy="27" r="7" fill="${["#d7263d", "#f5c518", "#1f9d55"][i]}"/>`).join("")}
+      ${Array.from({ length: 7 }, (_, i) => {
+        const on = i === 3, y = 90 + i * 42;
+        return `${on ? `<rect x="20" y="${y - 14}" width="400" height="38" rx="10" fill="#f3ecfb"/>` : ""}<circle cx="46" cy="${y + 5}" r="9" fill="${on ? PLUM : "#d9cfe6"}"/><rect x="66" y="${y}" width="${[220, 170, 250, 200, 190, 230, 150][i]}" height="10" rx="5" fill="${on ? PLUM : "#e4dcd0"}"/>`;
+      }).join("")}
+    </g>` + heart(700, 70, 2.2),
+  // Tier + item: Chip Kit — 54 loose chips (9 of each) beside a plain cube
+  "chip-kit": () => {
+    let s = bg();
+    const r = rng(77);
+    ORDER.forEach((c, row) => { for (let k = 0; k < 9; k++) s += chip(430 + k * 62 + (r() - .5) * 8, 60 + row * 70 + (r() - .5) * 8, 54, c, (r() - .5) * 16); });
+    // plain (untextured) cube
+    const w = 150 * C30, h = 75, cx = 210, cy = 210;
+    s += `<ellipse cx="${cx}" cy="${cy + 2 * h + 158}" rx="${w * 1.15}" ry="30" fill="#3a2a1a" opacity=".22" filter="url(#soft)"/>`;
+    const face = (O, A, B, fill) => { let g = `<g transform="matrix(${A[0] / 300} ${A[1] / 300} ${B[0] / 300} ${B[1] / 300} ${O[0]} ${O[1]})"><rect width="300" height="300" rx="16" fill="#17141f"/>`; for (let k = 0; k < 9; k++) g += `<rect x="${(k % 3) * 100 + 6}" y="${Math.floor(k / 3) * 100 + 6}" width="88" height="88" rx="12" fill="${fill[k]}"/>`; return g + "</g>"; };
+    const f = () => Array.from({ length: 9 }, () => COLORS[ORDER[Math.floor(r() * 6)]]);
+    s += face([cx, cy], [w, h], [-w, h], f()) + face([cx - w, cy + h], [w, h], [0, 150], f()) + `<g opacity=".9">${face([cx, cy + 2 * h], [w, -h], [0, 150], f())}</g>`;
+    s += `<g transform="matrix(${w / 300} ${h / 300} 0 ${150 / 300} ${cx - w} ${cy + h})"><rect width="300" height="300" rx="16" fill="#000" opacity=".08"/></g><g transform="matrix(${w / 300} ${-h / 300} 0 ${150 / 300} ${cx} ${cy + 2 * h})"><rect width="300" height="300" rx="16" fill="#000" opacity=".22"/></g>`;
+    return s;
+  },
+  // Tier: School Starter — a classroom set of 20 cubes + teaching guide
+  "school-starter": () => bg() + `<ellipse cx="480" cy="575" rx="330" ry="30" fill="#3a2a1a" opacity=".18" filter="url(#soft)"/>` +
+    isoGrid(440, 205, 64, 4, 5, 100) + guide(800, 250, 8, 1.0),
+  // Tier: School & NGO Pack — cartons of cubes + guide + school
+  "school-ngo-pack": () => bg() + school(40, 250, 1.0) +
+    `<ellipse cx="560" cy="628" rx="300" ry="28" fill="#3a2a1a" opacity=".2" filter="url(#soft)"/>` +
+    carton(430, 190, 190, 190, 150, 1) + carton(430, 40, 190, 190, 150, 3) + carton(594.5, 285, 190, 190, 150, 2) +
+    isoCube(820, 470, 58, 9) + isoCube(900, 505, 58, 12) + guide(850, 250, 10, .8),
+  // Items
+  "item-dream-cube": () => bg() + isoCube(522, 130, 210, 11),
+  "item-teaching-guide": () => bg() + guide(330, 150, -6, 1.2) + guide(520, 190, 8, 1.2),
+  "item-name-in-credits": () => SCENES["supporter"](),
+  "item-chip-kit": () => SCENES["chip-kit"](),
+};
+
+const scene = new URLSearchParams(location.search).get("scene") || "dream-cube";
+document.getElementById("art").innerHTML = DEFS + (SCENES[scene] || SCENES["dream-cube"])();
+window.SCENE_NAMES = Object.keys(SCENES);
+</script>
+</body>
+</html>

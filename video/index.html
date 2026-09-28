@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dream Cube Film</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Baloo+2:wght@600;700;800&display=swap">
+<style>
+  /* Page chrome around the film (theme-aware) */
+  :root {
+    --page: #fff8ee; --page-ink: #1d1a2e; --page-muted: #55506b; --page-line: #eadfce;
+    --accent: #5b2a86; --accent-ink: #ffffff; --focus: #0b63ce;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page: #16131f; --page-ink: #f6f1ff; --page-muted: #b9b1cc; --page-line: #342d45;
+      --accent: #c9a6ff; --accent-ink: #1d1a2e; --focus: #7fb6ff;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page: #16131f; --page-ink: #f6f1ff; --page-muted: #b9b1cc; --page-line: #342d45;
+    --accent: #c9a6ff; --accent-ink: #1d1a2e; --focus: #7fb6ff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--page); color: var(--page-ink);
+    font: 400 1rem/1.5 "Atkinson Hyperlegible", system-ui, sans-serif;
+    padding-inline: 16px; padding-block: 24px 48px;
+  }
+  .shell { max-width: 1200px; margin: 0 auto; display: grid; gap: 14px; }
+  .shell h1 { font: 800 1.6rem/1.1 "Baloo 2", system-ui, sans-serif; margin: 0; }
+  .shell p { margin: 0; color: var(--page-muted); }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+
+  .frame { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; overflow: hidden; border-radius: 14px; background: #0e0c14; box-shadow: 0 24px 60px -30px rgba(30, 10, 50, .5); }
+  .controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .controls button {
+    font: 700 .95rem/1 "Atkinson Hyperlegible", system-ui, sans-serif; min-height: 44px; padding: 0 18px;
+    border-radius: 999px; border: 2px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer;
+  }
+  .controls button.ghost { background: transparent; color: var(--accent); }
+  .controls input[type=range] { flex: 1 1 200px; accent-color: var(--accent); min-width: 0; }
+  .controls .time { font-variant-numeric: tabular-nums; color: var(--page-muted); min-width: 92px; text-align: right; }
+  .tips { font-size: .9rem; }
+
+  /* ---------- The film: fixed 1920x1080 stage, single visual world ---------- */
+  #stage {
+    position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0;
+    font-family: "Atkinson Hyperlegible", system-ui, sans-serif; color: #1d1a2e; overflow: hidden;
+    --cream: #fff8ee; --ink: #1d1a2e; --muted: #55506b; --plum: #5b2a86; --lilac: #c9a6ff;
+    --night: #0d1024; --night2: #1b1740;
+    --white: #f4f1ea; --green: #1f9d55; --orange: #f07a1a; --red: #d7263d; --blue: #1f6fd1; --yellow: #f5c518;
+  }
+  .scene { position: absolute; inset: 0; opacity: 0; }
+  .display { font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; line-height: 1.02; letter-spacing: -.01em; margin: 0; text-wrap: balance; }
+  .kicker { font-weight: 700; font-size: 26px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .rainbow { position: absolute; left: 0; right: 0; height: 14px; background: linear-gradient(90deg, var(--red) 0 16.66%, var(--orange) 0 33.33%, var(--yellow) 0 50%, var(--green) 0 66.66%, var(--blue) 0 83.33%, #cfc8bb 0); }
+
+  /* 3D cube */
+  .cube-wrap { position: absolute; perspective: 2400px; }
+  .cube { position: absolute; left: 50%; top: 50%; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2); transform-style: preserve-3d; }
+  .face { position: absolute; inset: 0; background: #17141f; border-radius: 22px; padding: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; backface-visibility: hidden; }
+  .face svg { width: 100%; height: 100%; display: block; }
+  .cube.mono .face { filter: grayscale(1) brightness(.62) contrast(1.15); }
+
+  /* captions */
+  #captions { position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); width: 1760px; text-align: center; z-index: 20; }
+  #captions .cap { display: inline; font-size: 38px; line-height: 1.45; font-weight: 700; color: #fff; background: rgba(14, 11, 24, .82); padding: 6px 18px; border-radius: 12px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  #captions .who { font-family: "Baloo 2", sans-serif; font-weight: 800; margin-right: 12px; }
+  #captions .who.meera { color: var(--lilac); }
+  #captions .who.arjun { color: #ffb36b; }
+  #stage.nocap #captions { display: none; }
+
+  /* scene: dark */
+  #s-dark { background: radial-gradient(1200px 800px at 50% 45%, #231d33 0%, #0e0c14 70%); }
+  #s-dark .q { position: absolute; left: 0; right: 0; top: 118px; text-align: center; color: #fff; font-size: 104px; }
+  #s-dark .sub { position: absolute; left: 0; right: 0; top: 250px; text-align: center; color: #b9b1cc; font-size: 40px; font-style: italic; }
+
+  /* scene: problem */
+  #s-problem { background: var(--cream); }
+  #s-problem .stat { position: absolute; left: 150px; top: 170px; width: 900px; }
+  #s-problem .stat .display { font-size: 118px; color: var(--ink); }
+  #s-problem .stat .display em { font-style: normal; color: var(--plum); }
+  #s-problem .stat p { font-size: 46px; color: var(--muted); margin: 26px 0 0; line-height: 1.25; }
+  #s-problem .people { position: absolute; right: 150px; top: 150px; width: 560px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px 36px; }
+  #s-problem .people svg { width: 100%; height: auto; }
+  #s-problem .ask { position: absolute; left: 150px; right: 150px; bottom: 170px; font-size: 96px; color: var(--plum); }
+
+  /* scene: reveal */
+  #s-reveal { background: var(--cream); }
+  #s-reveal .copy { position: absolute; left: 140px; top: 120px; width: 820px; }
+  #s-reveal .copy .display { font-size: 124px; color: var(--ink); }
+  #s-reveal .copy p { font-size: 48px; color: var(--muted); margin: 18px 0 34px; }
+  .legend { display: grid; gap: 22px; }
+  .legend .row { display: flex; align-items: center; gap: 26px; font-size: 44px; font-weight: 700; }
+  .legend .row svg { width: 96px; height: 96px; flex: none; filter: drop-shadow(0 8px 10px rgba(0,0,0,.18)); }
+  .legend .row span { color: var(--muted); font-weight: 400; }
+
+  /* scene: key */
+  #s-key { background: #f3ecfb; }
+  #s-key h2 { position: absolute; left: 0; right: 0; top: 96px; text-align: center; font-size: 84px; color: var(--ink); }
+  #s-key .grid { position: absolute; left: 50%; top: 250px; transform: translateX(-50%); display: grid; grid-template-columns: repeat(6, 230px); gap: 36px; }
+  #s-key .tile { display: grid; justify-items: center; gap: 18px; text-align: center; }
+  #s-key .tile .chip { width: 230px; height: 230px; border-radius: 30px; transition: none; }
+  #s-key .tile .chip svg { width: 100%; height: 100%; }
+  #s-key .tile b { font-family: "Baloo 2", sans-serif; font-size: 50px; font-weight: 800; line-height: 1; }
+  #s-key .tile span { font-size: 30px; color: var(--muted); }
+
+  /* scene: classroom */
+  #s-classroom { background: var(--cream); }
+  #s-classroom .photo { position: absolute; left: 120px; top: 90px; width: 600px; height: 780px; border-radius: 36px; overflow: hidden; box-shadow: 0 40px 70px -40px rgba(40,20,60,.6); }
+  #s-classroom .photo img { width: 100%; height: 100%; object-fit: cover; }
+  #s-classroom .tag { position: absolute; left: 150px; top: 120px; background: rgba(255,255,255,.92); padding: 8px 18px; border-radius: 999px; font-size: 26px; font-weight: 700; color: var(--ink); z-index: 2; }
+  #s-classroom .cards { position: absolute; left: 860px; right: 120px; top: 170px; display: grid; gap: 40px; }
+  #s-classroom .card { background: #fff; border: 2px solid #eadfce; border-radius: 32px; padding: 44px 50px; display: grid; grid-template-columns: 120px 1fr; gap: 36px; align-items: center; }
+  #s-classroom .card h3 { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 56px; margin: 0 0 6px; line-height: 1.05; }
+  #s-classroom .card p { font-size: 36px; color: var(--muted); margin: 0; line-height: 1.3; }
+
+  /* scene: night */
+  #s-night { background: linear-gradient(180deg, var(--night) 0%, var(--night2) 100%); color: #fff; }
+  #s-night canvas { position: absolute; inset: 0; }
+  #s-night .moon { position: absolute; right: 230px; top: 120px; width: 170px; height: 170px; border-radius: 50%; box-shadow: -34px 14px 0 0 #f5e6b8; }
+  #s-night .lines { position: absolute; left: 150px; top: 240px; display: grid; gap: 8px; }
+  #s-night .lines .display { font-size: 110px; }
+  #s-night .lines p { font-size: 50px; color: #cfc6ff; margin: 20px 0 0; }
+  #s-night .whisper { position: absolute; left: 150px; bottom: 210px; font-size: 64px; font-style: italic; color: #fff3c4; }
+
+  /* scene: prototype */
+  #s-prototype { background: var(--cream); }
+  #s-prototype h2 { position: absolute; left: 140px; top: 90px; font-size: 90px; }
+  #s-prototype h2 + p { position: absolute; left: 140px; top: 200px; font-size: 40px; color: var(--muted); margin: 0; }
+  #s-prototype .photos { position: absolute; left: 140px; right: 140px; top: 300px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  #s-prototype .photos figure { margin: 0; height: 500px; border-radius: 30px; overflow: hidden; box-shadow: 0 30px 60px -36px rgba(40,20,60,.6); }
+  #s-prototype .photos img { width: 100%; height: 100%; object-fit: cover; }
+  #s-prototype .badge { position: absolute; right: 140px; top: 110px; background: var(--yellow); color: var(--ink); font-weight: 700; font-size: 36px; padding: 16px 30px; border-radius: 999px; }
+
+  /* scene: funds */
+  #s-funds { background: var(--plum); color: #fff; }
+  #s-funds h2 { position: absolute; left: 140px; top: 120px; font-size: 96px; }
+  #s-funds .list { position: absolute; left: 140px; right: 140px; top: 330px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  #s-funds .item { background: rgba(255,255,255,.1); border: 2px solid rgba(255,255,255,.22); border-radius: 34px; padding: 50px 44px; display: grid; gap: 26px; align-content: start; min-height: 420px; }
+  #s-funds .item svg { width: 130px; height: 130px; }
+  #s-funds .item h3 { font-family: "Baloo 2", sans-serif; font-size: 58px; font-weight: 800; margin: 0; line-height: 1.02; }
+  #s-funds .item p { font-size: 34px; margin: 0; color: #e6dbf5; line-height: 1.3; }
+
+  /* scene: price */
+  #s-price { background: var(--cream); }
+  #s-price .pair { position: absolute; left: 140px; right: 140px; top: 170px; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
+  #s-price .card { border-radius: 40px; padding: 60px 64px; display: grid; gap: 14px; align-content: start; min-height: 520px; }
+  #s-price .card.school { background: #fff; border: 3px solid var(--green); }
+  #s-price .card.you { background: var(--ink); color: #fff; }
+  #s-price .card .who { font-size: 34px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
+  #s-price .card .amt { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 170px; line-height: .95; font-variant-numeric: tabular-nums; }
+  #s-price .card.school .amt { color: var(--green); }
+  #s-price .card.you .amt { color: var(--yellow); }
+  #s-price .card .note { font-size: 38px; opacity: .8; }
+  #s-price .foot { position: absolute; left: 140px; right: 140px; bottom: 190px; font-size: 64px; text-align: center; color: var(--plum); }
+
+  /* scene: open */
+  #s-open { background: #121019; color: #fff; }
+  #s-open .words { position: absolute; left: 140px; top: 190px; display: grid; gap: 4px; }
+  #s-open .words .display { font-size: 150px; }
+  #s-open .words .display:nth-child(1) { color: var(--yellow); }
+  #s-open .words .display:nth-child(2) { color: var(--lilac); }
+  #s-open .files { position: absolute; right: 140px; top: 190px; width: 760px; display: grid; gap: 18px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 30px; }
+  #s-open .files div { background: #1e1a2a; border: 1px solid #342d45; border-radius: 16px; padding: 18px 24px; display: flex; align-items: center; gap: 18px; color: #d9d2ea; }
+  #s-open .files i { width: 26px; height: 26px; border-radius: 6px; flex: none; }
+  #s-open .url { position: absolute; left: 140px; bottom: 200px; font-size: 40px; color: #b9b1cc; }
+  #s-open .url b { color: #fff; }
+
+  /* scene: end */
+  #s-end { background: var(--cream); }
+  #s-end .statement { position: absolute; left: 0; right: 0; top: 300px; text-align: center; }
+  #s-end .statement .display { font-size: 108px; }
+  #s-end .statement .display s { text-decoration-thickness: 10px; text-decoration-color: var(--red); color: var(--muted); }
+  #s-end .statement .display em { font-style: normal; color: var(--plum); }
+  #s-end .brand { position: absolute; left: 0; right: 0; top: 150px; display: grid; justify-items: center; gap: 30px; text-align: center; }
+  #s-end .brand img { width: 170px; height: 170px; border-radius: 36px; background: #fff; box-shadow: 0 20px 40px -24px rgba(40,20,60,.5); }
+  #s-end .brand .display { font-size: 140px; color: var(--ink); }
+  #s-end .tag { display: flex; gap: 40px; justify-content: center; font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 76px; }
+  #s-end .tag span:nth-child(1) { color: var(--blue); }
+  #s-end .tag span:nth-child(2) { color: var(--orange); }
+  #s-end .tag span:nth-child(3) { color: var(--green); }
+  #s-end .brand { top: 110px; gap: 24px; }
+  #s-end .brand img { width: 130px; height: 130px; border-radius: 30px; }
+  #s-end .brand .display { font-size: 118px; }
+  #s-end .tag { font-size: 68px; }
+  #s-end .act { display: flex; align-items: center; gap: 48px; margin-top: 14px; text-align: left; }
+  #s-end .act .qr { width: 250px; height: 250px; padding: 12px; background: #fff; border-radius: 22px; box-shadow: 0 20px 40px -24px rgba(40,20,60,.5); }
+  #s-end .act .qr img { width: 100%; height: 100%; border-radius: 0; box-shadow: none; display: block; }
+  #s-end .act .right { display: grid; gap: 16px; justify-items: start; }
+  #s-end .act .scan { font-size: 34px; color: var(--muted); font-weight: 700; }
+  #s-end .cta { background: #05ce78; color: #0b2a1a; font-weight: 700; font-size: 46px; padding: 24px 56px; border-radius: 999px; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <h1>LVC Dream Cube · Kickstarter film</h1>
+  <p>A 1 min 50 s film with a two-voice voiceover by Meera and Arjun. Press Play to watch. The rendered MP4 and captions file are in the repo’s <code>video/</code> folder.</p>
+  <div class="frame" id="frame">
+    <div id="stage" aria-label="Kickstarter film for the LVC Dream Cube">
+
+      <!-- 1. Eyes closed -->
+      <section class="scene" id="s-dark" data-scene="dark">
+        <div class="cube-wrap" style="left:560px; top:300px; width:800px; height:700px;">
+          <div class="cube mono" id="cube-dark" style="--s:380px"></div>
+        </div>
+        <h2 class="display q in" data-l="2">Which side is red?</h2>
+        <p class="sub in" data-l="3" data-o="2.4">Without sight, colour disappears.</p>
+      </section>
+
+      <!-- 2. The problem -->
+      <section class="scene" id="s-problem" data-scene="problem">
+        <div class="stat">
+          <div class="kicker in" data-l="4">Colour-vision differences</div>
+          <h2 class="display in" data-l="4" data-o="0.3"><em>1 in 12</em> boys sees colour differently.</h2>
+          <p class="in" data-l="4" data-o="3.4">And some kids can't see colour at all.</p>
+        </div>
+        <div class="people" id="people"></div>
+        <h2 class="display ask in" data-l="5" data-o="0.2">What if colours could be felt?</h2>
+      </section>
+
+      <!-- 3. The reveal -->
+      <section class="scene" id="s-reveal" data-scene="reveal">
+        <div class="copy">
+          <h2 class="display in" data-l="6" data-o="0">LVC Dream Cube</h2>
+          <p class="in" data-l="6" data-o="1.6">Every colour gets its own texture.</p>
+          <div class="legend">
+            <div class="row in" data-l="6" data-o="4.4"><span class="chip-slot" data-c="white" data-t="smooth"></span>White <span>smooth</span></div>
+            <div class="row in" data-l="6" data-o="5.8"><span class="chip-slot" data-c="green" data-t="frame"></span>Green <span>raised frame</span></div>
+            <div class="row in" data-l="6" data-o="7.8"><span class="chip-slot" data-c="orange" data-t="ridges"></span>Orange <span>ridges</span></div>
+          </div>
+        </div>
+        <div class="cube-wrap" style="left:1000px; top:120px; width:820px; height:840px;">
+          <div class="cube" id="cube-reveal" style="--s:420px"></div>
+        </div>
+      </section>
+
+      <!-- 4. The tactile key -->
+      <section class="scene" id="s-key" data-scene="key">
+        <h2 class="display">Six colours. Six textures.</h2>
+        <div class="grid">
+          <div class="tile" data-k="white"><div class="chip" data-c="white" data-t="smooth"></div><b>Smooth</b><span>white</span></div>
+          <div class="tile" data-k="green"><div class="chip" data-c="green" data-t="frame"></div><b>Frame</b><span>green</span></div>
+          <div class="tile" data-k="orange"><div class="chip" data-c="orange" data-t="ridges"></div><b>Ridges</b><span>orange</span></div>
+          <div class="tile" data-k="red" data-hl="7" data-ho="1.1"><div class="chip" data-c="red" data-t="rings"></div><b>Rings</b><span>red</span></div>
+          <div class="tile" data-k="blue" data-hl="8" data-ho="1.1"><div class="chip" data-c="blue" data-t="dots"></div><b>Dots</b><span>blue</span></div>
+          <div class="tile" data-k="yellow" data-hl="9" data-ho="0"><div class="chip" data-c="yellow" data-t="dome"></div><b>Dome</b><span>yellow</span></div>
+        </div>
+      </section>
+
+      <!-- 5. Classroom -->
+      <section class="scene" id="s-classroom" data-scene="classroom">
+        <span class="tag">Real prototype</span>
+        <div class="photo"><img src="img/cube-red-yellow-green.jpg" alt="The prototype cube with red rings on top and yellow domes and green frames on the sides"></div>
+        <div class="cards">
+          <div class="card in" data-l="10" data-o="0.2">
+            <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="44" cy="60" r="34" fill="#d7263d"/><circle cx="76" cy="60" r="34" fill="#1f9d55" fill-opacity=".85"/><path d="M60 32a34 34 0 0 1 0 56a34 34 0 0 1 0-56z" fill="#6b5a2a"/></svg>
+            <div><h3>No more guessing</h3><p>Texture works alongside colour, so red and green never get mixed up.</p></div>
+          </div>
+          <div class="card in" data-l="10" data-o="4.4">
+            <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M30 104V58c0-6 9-6 9 0v14V34c0-6 9-6 9 0v34V26c0-6 9-6 9 0v42V32c0-6 9-6 9 0v44l6-10c4-6 12-2 9 4L74 104z" fill="#5b2a86"/><circle cx="52" cy="14" r="5" fill="#f5c518"/><circle cx="68" cy="14" r="5" fill="#f5c518"/><circle cx="84" cy="22" r="5" fill="#f5c518"/></svg>
+            <div><h3>Solved by touch</h3><p>Blind and low-vision kids solve it with their fingertips, right next to their friends.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Night -->
+      <section class="scene" id="s-night" data-scene="night">
+        <canvas id="stars" width="1920" height="1080"></canvas>
+        <div class="moon"></div>
+        <div class="lines">
+          <h2 class="display in" data-l="12" data-o="0.2">Lights off.</h2>
+          <h2 class="display in" data-l="12" data-o="1.5">Phone down.</h2>
+          <p class="in" data-l="12" data-o="2.9">Just you, the cube and your fingertips.</p>
+        </div>
+        <div class="cube-wrap" style="left:1080px; top:260px; width:700px; height:700px;">
+          <div class="cube mono" id="cube-night" style="--s:330px"></div>
+        </div>
+        <p class="whisper in" data-l="13" data-o="0.3">A puzzle in the dark.</p>
+      </section>
+
+      <!-- 7. Prototype -->
+      <section class="scene" id="s-prototype" data-scene="prototype">
+        <h2 class="display in" data-l="14">The real prototype</h2>
+        <p class="in" data-l="14" data-o="1.2">3D-printed 12 mm chips on an ordinary 3×3 cube</p>
+        <span class="badge in" data-l="15" data-o="0.3">Not finished yet. That's where you come in.</span>
+        <div class="photos">
+          <figure class="in" data-l="14" data-o="0.4"><img src="img/cube-scrambled.jpg" alt="Scrambled prototype cube"></figure>
+          <figure class="in" data-l="14" data-o="1.0"><img src="img/cube-green-orange.jpg" alt="Green frames and orange ridges"></figure>
+          <figure class="in" data-l="14" data-o="1.6"><img src="img/cube-red-yellow-green.jpg" alt="Red rings, yellow domes and green frames"></figure>
+        </div>
+      </section>
+
+      <!-- 8. What backing funds -->
+      <section class="scene" id="s-funds" data-scene="funds">
+        <h2 class="display in" data-l="16">What your backing builds</h2>
+        <div class="list">
+          <div class="item in" data-l="16" data-o="1.2">
+            <svg viewBox="0 0 130 130" aria-hidden="true"><circle cx="45" cy="42" r="18" fill="#f5c518"/><circle cx="88" cy="48" r="14" fill="#ffb36b"/><path d="M14 112c0-24 14-40 31-40s31 16 31 40z" fill="#f5c518"/><path d="M62 112c2-20 12-32 26-32s24 12 26 32z" fill="#ffb36b"/></svg>
+            <h3>Testing with kids</h3><p>Play-testing in schools and NGOs, with the children it's meant for.</p>
+          </div>
+          <div class="item in" data-l="16" data-o="3.2">
+            <svg viewBox="0 0 130 130" aria-hidden="true"><rect x="14" y="30" width="102" height="70" rx="14" fill="#c9a6ff"/><g fill="#5b2a86"><rect x="26" y="44" width="22" height="22" rx="5"/><rect x="54" y="44" width="22" height="22" rx="5"/><rect x="82" y="44" width="22" height="22" rx="5"/></g><rect x="40" y="16" width="50" height="14" rx="6" fill="#fff"/></svg>
+            <h3>Moulded chips</h3><p>Durable, ready to play, with no glue or printer needed.</p>
+          </div>
+          <div class="item in" data-l="16" data-o="4.8">
+            <svg viewBox="0 0 130 130" aria-hidden="true"><rect x="18" y="16" width="64" height="98" rx="10" fill="#fff"/><g fill="#5b2a86"><circle cx="36" cy="38" r="6"/><circle cx="36" cy="56" r="6"/><circle cx="54" cy="38" r="6"/><circle cx="36" cy="80" r="6"/><circle cx="54" cy="80" r="6"/><circle cx="54" cy="98" r="6"/></g><path d="M92 50c10 8 10 22 0 30M102 40c16 14 16 36 0 50" stroke="#f5c518" stroke-width="7" fill="none" stroke-linecap="round"/></svg>
+            <h3>Braille &amp; audio</h3><p>Accessible packaging and instructions for every player.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. Price -->
+      <section class="scene" id="s-price" data-scene="price">
+        <div class="pair">
+          <div class="card school in" data-l="17" data-o="0.2">
+            <div class="who">Schools &amp; NGOs</div>
+            <div class="amt">&lt;$9.99</div>
+            <div class="note">per cube, in packs of 200</div>
+          </div>
+          <div class="card you in" data-l="18" data-o="0.1">
+            <div class="who">For you</div>
+            <div class="amt">$24.99</div>
+            <div class="note">one Dream Cube</div>
+          </div>
+        </div>
+        <p class="display foot in" data-l="18" data-o="2.3">Every cube helps put one in a classroom.</p>
+      </section>
+
+      <!-- 10. Open source -->
+      <section class="scene" id="s-open" data-scene="open">
+        <div class="words">
+          <h2 class="display in" data-l="20" data-o="0">Free.</h2>
+          <h2 class="display in" data-l="20" data-o="0.7">Open source.</h2>
+          <h2 class="display in" data-l="20" data-o="1.4">For everyone.</h2>
+        </div>
+        <div class="files" id="files"></div>
+        <p class="url in" data-l="19" data-o="0.2">CC BY 4.0 · <b>github.com/bytesbrains/lvc-dream-cube</b></p>
+      </section>
+
+      <!-- 11. End -->
+      <section class="scene" id="s-end" data-scene="end">
+        <div class="statement in" data-l="21" data-o="0.8" data-ul="22" data-uo="0">
+          <h2 class="display">A toy made for <s>eyes</s></h2>
+          <h2 class="display in" data-l="21" data-o="2.9">made for <em>everyone</em>.</h2>
+        </div>
+        <div class="brand in" data-l="22" data-o="0.1">
+          <img src="img/lvc-logo.png" alt="Little Voice Club logo">
+          <h2 class="display">LVC Dream Cube</h2>
+          <div class="tag">
+            <span class="in" data-l="22" data-o="1.7">See it.</span>
+            <span class="in" data-l="22" data-o="2.5">Feel it.</span>
+            <span class="in" data-l="22" data-o="3.3">Solve it.</span>
+          </div>
+          <div class="act in" data-l="23" data-o="0">
+            <div class="qr"><img src="img/qr-kickstarter.svg" alt="QR code linking to the LVC Dream Cube Kickstarter page"></div>
+            <div class="right">
+              <div class="cta">Back us on Kickstarter</div>
+              <div class="scan">Scan the code to open the project</div>
+            </div>
+          </div>
+        </div>
+        <div class="rainbow" style="bottom:0"></div>
+      </section>
+
+      <div id="captions" aria-live="off"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="play" type="button">Play</button>
+    <button id="restart" class="ghost" type="button">Restart</button>
+    <input id="seek" type="range" min="0" max="108" step="0.01" value="0" aria-label="Seek">
+    <span class="time" id="time">0:00</span>
+    <button id="cc" class="ghost" type="button" aria-pressed="true">Captions on</button>
+    <button id="fs" class="ghost" type="button">Fullscreen</button>
+  </div>
+  <p class="tips">Keyboard: Space plays or pauses, C toggles captions, F goes fullscreen.</p>
+  <audio id="vo" src="dialogue.mp3" preload="auto"></audio>
+</div>
+
+<!-- shared SVG defs for the texture chips -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="chipclip"><rect x="10" y="10" width="80" height="80" rx="12"/></clipPath>
+    <radialGradient id="domeg" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".35" stop-color="#fff" stop-opacity=".15"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></radialGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
+  </defs>
+</svg>
+
+<script src="timings.js"></script>
+<script>
+(() => {
+  const T = window.TIMINGS;
+  const COLORS = { white: "#f4f1ea", green: "#1f9d55", orange: "#f07a1a", red: "#d7263d", blue: "#1f6fd1", yellow: "#f5c518" };
+  const TEX = { white: "smooth", green: "frame", orange: "ridges", red: "rings", blue: "dots", yellow: "dome" };
+  const END = Math.ceil(T[T.length - 1].end + 4.4); // last line + 2 s, then 2 silent seconds on the end card
+
+  // ---- texture chip (embossed relief in a 100-unit box) ----
+  function relief(t) {
+    switch (t) {
+      case "frame": return `<rect x="24" y="24" width="52" height="52" rx="6" fill="none" stroke-width="9" STROKE/>`;
+      case "ridges": { let s = ""; for (let k = -60; k <= 100; k += 15) s += `<line x1="${k}" y1="100" x2="${k + 100}" y2="0" stroke-width="6" STROKE/>`; return `<g clip-path="url(#chipclip)">${s}</g>`; }
+      case "rings": return `<circle cx="50" cy="50" r="10" fill="none" stroke-width="6" STROKE/><circle cx="50" cy="50" r="22" fill="none" stroke-width="6" STROKE/><circle cx="50" cy="50" r="34" fill="none" stroke-width="6" STROKE/>`;
+      case "dots": { let s = ""; for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) s += `<circle cx="${26 + i * 16}" cy="${26 + j * 16}" r="5.4" FILL/>`; return s; }
+      default: return "";
+    }
+  }
+  function chip(c, t) {
+    const col = COLORS[c];
+    let body = `<rect x="4" y="4" width="92" height="92" rx="14" fill="${col}"/><rect x="10" y="10" width="80" height="80" rx="12" fill="${col}" stroke="rgba(0,0,0,.18)" stroke-width="1.5"/>`;
+    if (t === "dome") {
+      body += `<circle cx="52" cy="53" r="27" fill="rgba(0,0,0,.28)"/><circle cx="50" cy="50" r="26" fill="${col}"/><circle cx="50" cy="50" r="26" fill="url(#domeg)"/>`;
+    } else if (t !== "smooth") {
+      const r = relief(t);
+      body += r.replaceAll("STROKE", 'stroke="rgba(0,0,0,.32)"').replaceAll("FILL", 'fill="rgba(0,0,0,.32)"').replace(/^/, '<g transform="translate(1.6 1.6)">') + "</g>";
+      body += r.replaceAll("STROKE", 'stroke="rgba(255,255,255,.55)"').replaceAll("FILL", 'fill="rgba(255,255,255,.55)"').replace(/^/, '<g transform="translate(-1 -1)">') + "</g>";
+      body += r.replaceAll("STROKE", `stroke="${col}"`).replaceAll("FILL", `fill="${col}"`);
+    }
+    body += `<rect x="10" y="10" width="80" height="80" rx="12" fill="url(#gloss)"/>`;
+    return `<svg viewBox="0 0 100 100" aria-hidden="true">${body}</svg>`;
+  }
+  document.querySelectorAll("[data-c][data-t]").forEach(el => { el.innerHTML = chip(el.dataset.c, el.dataset.t); });
+
+  // ---- 3D cubes with a fixed scramble ----
+  function rng(seed) { const next = () => (seed = (seed * 16807) % 2147483647) / 2147483647; for (let i = 0; i < 8; i++) next(); return next; }
+  function buildCube(el, seed) {
+    const r = rng(seed);
+    const all = Object.keys(COLORS).flatMap(c => Array(9).fill(c));
+    for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [all[i], all[j]] = [all[j], all[i]]; }
+    const s = parseFloat(getComputedStyle(el).getPropertyValue("--s"));
+    const h = s / 2;
+    const tf = [`translateZ(${h}px)`, `rotateY(180deg) translateZ(${h}px)`, `rotateY(90deg) translateZ(${h}px)`, `rotateY(-90deg) translateZ(${h}px)`, `rotateX(90deg) translateZ(${h}px)`, `rotateX(-90deg) translateZ(${h}px)`];
+    tf.forEach((t, f) => {
+      const face = document.createElement("div");
+      face.className = "face"; face.style.transform = t;
+      face.innerHTML = all.slice(f * 9, f * 9 + 9).map(c => chip(c, TEX[c])).join("");
+      el.appendChild(face);
+    });
+  }
+  buildCube(document.getElementById("cube-dark"), 7);
+  buildCube(document.getElementById("cube-reveal"), 11);
+  buildCube(document.getElementById("cube-night"), 23);
+
+  // ---- people (1 in 12) ----
+  const person = on => `<svg viewBox="0 0 100 150" aria-hidden="true"><circle cx="50" cy="32" r="24" fill="${on ? "#5b2a86" : "#d9cfe6"}"/><path d="M10 146c0-46 18-74 40-74s40 28 40 74z" fill="${on ? "#5b2a86" : "#d9cfe6"}"/>${on ? '<circle cx="50" cy="104" r="16" fill="#d7263d"/><path d="M50 88a16 16 0 0 1 0 32z" fill="#1f9d55"/>' : ""}</svg>`;
+  const people = document.getElementById("people");
+  for (let i = 0; i < 12; i++) { const d = document.createElement("div"); d.innerHTML = person(i === 6); d.className = "in"; d.dataset.l = "4"; d.dataset.o = (0.6 + i * 0.12).toFixed(2); people.appendChild(d); }
+
+  // ---- open-source file list ----
+  const files = document.getElementById("files");
+  [["smooth_white", "white"], ["frame_green", "green"], ["ridges_orange", "orange"], ["rings_red", "red"], ["dots_blue", "blue"], ["dome_yellow", "yellow"]].forEach(([n, c], i) => {
+    const d = document.createElement("div");
+    d.className = "in"; d.dataset.l = "19"; d.dataset.o = (0.4 + i * 0.25).toFixed(2);
+    d.innerHTML = `<i style="background:${COLORS[c]}"></i>rubik_36x_${n}.3mf`;
+    files.appendChild(d);
+  });
+
+  // ---- stars ----
+  const stars = Array.from({ length: 140 }, (_, i) => { const r = rng(1000 + i); return { x: r() * 1920, y: r() * 760, s: 0.6 + r() * 2.2, p: r() * 6.28 }; });
+  const sctx = document.getElementById("stars").getContext("2d");
+  function drawStars(t) {
+    sctx.clearRect(0, 0, 1920, 1080);
+    for (const st of stars) { sctx.globalAlpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * 1.6 + st.p)); sctx.fillStyle = "#fff"; sctx.beginPath(); sctx.arc(st.x, st.y, st.s, 0, 6.283); sctx.fill(); }
+    sctx.globalAlpha = 1;
+  }
+
+  // ---- timeline ----
+  const at = (l, o) => (T[+l] ? T[+l].start : 0) + (+o || 0);
+  const scenes = [...document.querySelectorAll(".scene")].map(el => {
+    const idx = T.findIndex(x => x.scene === el.dataset.scene);
+    return { el, start: idx <= 0 ? -1 : T[idx].start };
+  });
+  scenes.forEach((s, i) => { s.end = i < scenes.length - 1 ? scenes[i + 1].start : Infinity; });
+  const ins = [...document.querySelectorAll(".in")].map(el => ({
+    el, a: at(el.dataset.l, el.dataset.o),
+    u: el.dataset.ul != null ? at(el.dataset.ul, el.dataset.uo) : Infinity
+  }));
+  const tiles = [...document.querySelectorAll("#s-key .tile")].map(el => ({ el, a: el.dataset.hl ? at(el.dataset.hl, el.dataset.ho) : null }));
+  const clamp = v => Math.max(0, Math.min(1, v));
+  const ease = p => 1 - Math.pow(1 - p, 3);
+  const caps = document.getElementById("captions");
+  const clean = s => s.replace(/\[[^\]]*\]\s*/g, "").trim();
+  let lastCap = null;
+  const CUES = T.flatMap((l, i) => {
+    const parts = clean(l.text).match(/[^.!?]+(?:[.!?]+(?:\.\.)?|$)/g).map(x => x.trim()).filter(Boolean);
+    // merge very short fragments into their neighbour so captions don't flicker
+    const merged = [];
+    for (const p of parts) (merged.length && (p.length < 14 || merged[merged.length - 1].length < 14)) ? merged[merged.length - 1] += " " + p : merged.push(p);
+    const total = merged.reduce((n, p) => n + p.length, 0);
+    const end = T[i + 1] ? T[i + 1].start : l.end + 0.4;
+    let a = l.start;
+    return merged.map(p => { const b = a + (l.end - l.start) * p.length / total; const cue = { who: l.who, text: p, a, b: b }; a = b; return cue; })
+      .map((c, k, arr) => (k === arr.length - 1 ? { ...c, b: end } : c));
+  });
+
+  function render(t) {
+    for (const s of scenes) {
+      const o = Math.min(clamp((t - (s.start - 0.25)) / 0.5), clamp((s.end + 0.25 - t) / 0.5));
+      s.el.style.opacity = o;
+      s.el.style.visibility = o > 0 ? "visible" : "hidden";
+    }
+    for (const e of ins) {
+      const p = ease(clamp((t - e.a) / 0.7));
+      const q = ease(clamp((t - e.u) / 0.5));
+      e.el.style.opacity = p * (1 - q);
+      e.el.style.transform = `translateY(${(1 - p) * 34 - q * 20}px)`;
+    }
+    // key scene: highlight the chip being named
+    let active = null;
+    for (const tl of tiles) if (tl.a != null && t >= tl.a) active = tl;
+    for (const tl of tiles) {
+      const on = tl === active;
+      const dim = active && !on;
+      tl.el.style.opacity = dim ? 0.38 : 1;
+      tl.el.style.transform = on ? `translateY(-24px) scale(1.12)` : "none";
+      tl.el.querySelector(".chip").style.boxShadow = on ? "0 0 0 10px #5b2a86, 0 30px 50px -20px rgba(40,20,60,.6)" : "0 20px 40px -24px rgba(40,20,60,.5)";
+    }
+    // cubes
+    document.getElementById("cube-dark").style.transform = `rotateX(-24deg) rotateY(${30 + t * 14}deg)`;
+    document.getElementById("cube-reveal").style.transform = `rotateX(-26deg) rotateY(${-20 + (t - 25) * 18}deg)`;
+    document.getElementById("cube-night").style.transform = `rotateX(-20deg) rotateY(${t * 9}deg) rotateZ(${Math.sin(t * .8) * 4}deg)`;
+    if (t > 50 && t < 66) drawStars(t);
+    // captions: one sentence at a time, timed by length within the line
+    let key = "";
+    for (const c of CUES) if (t >= c.a && t < c.b) key = c;
+    if (key !== lastCap) {
+      lastCap = key;
+      caps.innerHTML = key ? `<span class="cap"><span class="who ${key.who}">${key.who === "meera" ? "Meera" : "Arjun"}</span>${key.text}</span>` : "";
+    }
+  }
+
+  // ---- scaling ----
+  const stage = document.getElementById("stage");
+  const frame = document.getElementById("frame");
+  function fit() { stage.style.transform = `scale(${frame.clientWidth / 1920})`; }
+  const ro = new ResizeObserver(fit);
+  ro.observe(frame);
+  fit();
+
+  // ---- capture mode: ?capture=1 makes the stage fill the window and exposes renderAt(t) ----
+  const params = new URLSearchParams(location.search);
+  if (params.get("captions") === "0") stage.classList.add("nocap");
+  if (params.get("capture") === "1") {
+    ro.disconnect();
+    const defs = document.querySelector("svg defs").closest("svg");
+    document.body.style.cssText = "margin:0;padding:0;background:#000;overflow:hidden";
+    document.body.innerHTML = "";
+    document.body.append(defs, stage);
+    stage.style.transform = "none";
+    window.renderAt = t => render(t);
+    window.FILM_END = END;
+    render(0);
+    return;
+  }
+
+  // ---- playback ----
+  document.getElementById("seek").max = END;
+  const vo = document.getElementById("vo");
+  const play = document.getElementById("play");
+  const seek = document.getElementById("seek");
+  const time = document.getElementById("time");
+  let clock = 0, running = false, lastTs = 0;
+  const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+  function now() { return vo.duration && !vo.ended && clock < vo.duration ? vo.currentTime : clock; }
+  function loop(ts) {
+    if (running) {
+      if (vo.paused || vo.ended || clock >= (vo.duration || 0)) clock += (ts - lastTs) / 1000; else clock = vo.currentTime;
+      if (clock >= END) { running = false; play.textContent = "Play"; clock = END; }
+    }
+    lastTs = ts;
+    render(clock);
+    seek.value = clock;
+    time.textContent = `${fmt(clock)} / ${fmt(END)}`;
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  function toggle() {
+    if (running) { running = false; vo.pause(); play.textContent = "Play"; return; }
+    if (clock >= END) clock = 0;
+    running = true; play.textContent = "Pause";
+    if (vo.duration && clock < vo.duration) { vo.currentTime = clock; vo.play().catch(() => {}); }
+  }
+  play.addEventListener("click", toggle);
+  document.getElementById("restart").addEventListener("click", () => { clock = 0; vo.currentTime = 0; if (!running) toggle(); else vo.play().catch(() => {}); });
+  seek.addEventListener("input", () => { clock = +seek.value; if (vo.duration && clock < vo.duration) vo.currentTime = clock; });
+  const cc = document.getElementById("cc");
+  function toggleCC() { const off = stage.classList.toggle("nocap"); cc.textContent = off ? "Captions off" : "Captions on"; cc.setAttribute("aria-pressed", String(!off)); }
+  cc.addEventListener("click", toggleCC);
+  document.getElementById("fs").addEventListener("click", () => { frame.requestFullscreen?.(); });
+  document.addEventListener("keydown", e => {
+    if (e.target.tagName === "INPUT") return;
+    if (e.code === "Space") { e.preventDefault(); toggle(); }
+    if (e.key === "c" || e.key === "C") toggleCC();
+    if (e.key === "f" || e.key === "F") frame.requestFullscreen?.();
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{
+  "model_id": "eleven_v3",
+  "out": "discovery",
+  "voices": {
+    "arjun": "slBGJQemxngiq6a5p79P",
+    "meera": "aQvy1p8iPYKU1riodNwU"
+  },
+  "lines": [
+    {
+      "who": "meera",
+      "scene": "dark",
+      "text": "[whispers] Close your eyes."
+    },
+    {
+      "who": "arjun",
+      "scene": "dark",
+      "text": "[curious] Okay... closed."
+    },
+    {
+      "who": "meera",
+      "scene": "dark",
+      "text": "Which side is red?"
+    },
+    {
+      "who": "arjun",
+      "scene": "dark",
+      "text": "[laughs] No idea!"
+    },
+    {
+      "who": "meera",
+      "scene": "feel",
+      "text": "Feel it. The rings... are red."
+    },
+    {
+      "who": "arjun",
+      "scene": "feel",
+      "text": "[surprised] Wait... dots are blue. And this dome... yellow!"
+    },
+    {
+      "who": "meera",
+      "scene": "key",
+      "text": "[warmly] Every colour has its own texture."
+    },
+    {
+      "who": "arjun",
+      "scene": "who",
+      "text": "[thoughtful] So blind and low-vision kids can solve it by touch... and I can play it with the lights off."
+    },
+    {
+      "who": "meera",
+      "scene": "end",
+      "text": "LVC Dream Cube. [excited] Back us on Kickstarter!"
+    }
+  ]
+}

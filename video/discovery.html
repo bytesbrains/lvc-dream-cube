@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dream Cube Discovery Cut</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Baloo+2:wght@600;700;800&display=swap">
+<style>
+  :root {
+    --page: #fff8ee; --page-ink: #1d1a2e; --page-muted: #55506b;
+    --accent: #5b2a86; --accent-ink: #ffffff; --focus: #0b63ce;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --page: #16131f; --page-ink: #f6f1ff; --page-muted: #b9b1cc; --accent: #c9a6ff; --accent-ink: #1d1a2e; --focus: #7fb6ff; }
+  }
+  :root[data-theme="dark"] { --page: #16131f; --page-ink: #f6f1ff; --page-muted: #b9b1cc; --accent: #c9a6ff; --accent-ink: #1d1a2e; --focus: #7fb6ff; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--page); color: var(--page-ink); font: 400 1rem/1.5 "Atkinson Hyperlegible", system-ui, sans-serif; padding-inline: 16px; padding-block: 24px 48px; }
+  .shell { max-width: 460px; margin: 0 auto; display: grid; gap: 14px; }
+  .shell h1 { font: 800 1.5rem/1.1 "Baloo 2", system-ui, sans-serif; margin: 0; }
+  .shell p { margin: 0; color: var(--page-muted); }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+  .frame { position: relative; width: 100%; aspect-ratio: 9 / 16; max-width: 100%; overflow: hidden; border-radius: 18px; background: #0e0c14; box-shadow: 0 24px 60px -30px rgba(30,10,50,.5); }
+  .controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .controls button { font: 700 .95rem/1 "Atkinson Hyperlegible", system-ui, sans-serif; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 2px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  .controls button.ghost { background: transparent; color: var(--accent); }
+  .controls input[type=range] { flex: 1 1 140px; accent-color: var(--accent); min-width: 0; }
+  .controls .time { font-variant-numeric: tabular-nums; color: var(--page-muted); }
+
+  /* ---------- 1080x1920 stage. Feed UI covers the top ~220px, bottom ~420px and right ~150px. ---------- */
+  #stage {
+    position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 0 0; overflow: hidden;
+    font-family: "Atkinson Hyperlegible", system-ui, sans-serif; color: #1d1a2e;
+    --cream: #fff8ee; --ink: #1d1a2e; --muted: #55506b; --plum: #5b2a86; --lilac: #c9a6ff; --night: #0d1024; --night2: #1b1740;
+    --white: #f4f1ea; --green: #1f9d55; --orange: #f07a1a; --red: #d7263d; --blue: #1f6fd1; --yellow: #f5c518;
+  }
+  .scene { position: absolute; inset: 0; opacity: 0; }
+  .display { font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; line-height: 1.02; letter-spacing: -.01em; margin: 0; text-wrap: balance; }
+  .center { position: absolute; left: 80px; right: 150px; text-align: center; }
+  .rainbow { position: absolute; left: 0; right: 0; height: 16px; background: linear-gradient(90deg, var(--red) 0 16.66%, var(--orange) 0 33.33%, var(--yellow) 0 50%, var(--green) 0 66.66%, var(--blue) 0 83.33%, #cfc8bb 0); }
+
+  .cube-wrap { position: absolute; perspective: 2400px; }
+  .cube { position: absolute; left: 50%; top: 50%; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2); transform-style: preserve-3d; }
+  .face { position: absolute; inset: 0; background: #17141f; border-radius: 22px; padding: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; backface-visibility: hidden; }
+  .face svg { width: 100%; height: 100%; display: block; }
+  .cube.mono .face { filter: grayscale(1) brightness(.62) contrast(1.15); }
+
+  #captions { position: absolute; left: 70px; right: 170px; bottom: 440px; text-align: center; z-index: 20; }
+  #captions .cap { display: inline; font-size: 46px; line-height: 1.5; font-weight: 700; color: #fff; background: rgba(14,11,24,.84); padding: 8px 20px; border-radius: 14px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  #captions .who { font-family: "Baloo 2", sans-serif; font-weight: 800; margin-right: 12px; }
+  #captions .who.meera { color: var(--lilac); }
+  #captions .who.arjun { color: #ffb36b; }
+  #stage.nocap #captions { display: none; }
+
+  /* dark */
+  #s-dark { background: radial-gradient(900px 1100px at 50% 50%, #251e37 0%, #0e0c14 72%); color: #fff; }
+  #s-dark .t1, #s-dark .t2 { top: 250px; font-size: 118px; }
+  #s-dark .t2 { color: #fff; }
+  #s-dark .t2 em { font-style: normal; color: var(--red); }
+  #s-dark .shrug { top: 1250px; font-size: 64px; font-style: italic; color: #b9b1cc; }
+
+  /* feel */
+  #s-feel { background: var(--cream); }
+  #s-feel h2 { top: 250px; font-size: 104px; }
+  #s-feel .stack { position: absolute; left: 110px; right: 180px; top: 440px; display: grid; gap: 34px; }
+  #s-feel .row { display: grid; grid-template-columns: 250px 1fr; gap: 44px; align-items: center; }
+  #s-feel .row .chip { width: 250px; height: 250px; filter: drop-shadow(0 18px 22px rgba(40,20,60,.28)); }
+  #s-feel .row .chip svg { width: 100%; height: 100%; }
+  #s-feel .row b { display: block; font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 84px; line-height: 1; }
+  #s-feel .row span { font-size: 44px; color: var(--muted); }
+
+  /* key */
+  #s-key { background: #f3ecfb; }
+  #s-key h2 { top: 240px; font-size: 100px; }
+  #s-key .grid { position: absolute; left: 110px; right: 180px; top: 880px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px 30px; }
+  #s-key .grid div { display: grid; justify-items: center; gap: 6px; font-weight: 700; font-size: 34px; color: var(--muted); }
+  #s-key .grid svg { width: 140px; height: 140px; }
+
+  /* who */
+  #s-who { background: linear-gradient(180deg, var(--cream) 0 45%, var(--night) 45% 100%); }
+  #s-who canvas { position: absolute; left: 0; top: 864px; }
+  #s-who .top { top: 260px; font-size: 96px; color: var(--ink); }
+  #s-who .top em { font-style: normal; color: var(--plum); }
+  #s-who .bot { top: 1030px; font-size: 96px; color: #fff; }
+  #s-who .bot em { font-style: normal; color: #fff3c4; }
+  #s-who .moon { position: absolute; left: 470px; top: 900px; width: 110px; height: 110px; border-radius: 50%; box-shadow: -22px 10px 0 0 #f5e6b8; }
+  #s-who .icon { position: absolute; left: 50%; transform: translateX(-50%); }
+
+  /* end */
+  #s-end { background: var(--cream); }
+  #s-end .brand { top: 230px; display: grid; justify-items: center; gap: 28px; }
+  #s-end .brand img { width: 140px; height: 140px; border-radius: 32px; background: #fff; box-shadow: 0 20px 40px -24px rgba(40,20,60,.5); }
+  #s-end .brand .display { font-size: 96px; white-space: nowrap; }
+  #s-end .tag { display: grid; gap: 0; font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 72px; line-height: 1.05; }
+  #s-end .act { display: flex; align-items: center; gap: 30px; text-align: left; }
+  #s-end .act .qr { width: 260px; height: 260px; padding: 12px; background: #fff; border-radius: 22px; box-shadow: 0 20px 40px -24px rgba(40,20,60,.5); flex: none; }
+  #s-end .act .qr img { width: 100%; height: 100%; border-radius: 0; box-shadow: none; display: block; }
+  #s-end .act .right { display: grid; gap: 14px; justify-items: start; }
+  #s-end .act .scan { font-size: 32px; color: var(--muted); font-weight: 700; line-height: 1.25; }
+  #s-end .tag span:nth-child(1) { color: var(--blue); }
+  #s-end .tag span:nth-child(2) { color: var(--orange); }
+  #s-end .tag span:nth-child(3) { color: var(--green); }
+  #s-end .cta { background: #05ce78; color: #0b2a1a; font-weight: 700; font-size: 40px; line-height: 1.15; padding: 22px 34px; border-radius: 999px; }
+  #s-end .price { font-size: 40px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <h1>Discovery Mode cut</h1>
+  <p>A 27-second 9:16 cut for Kickstarter's mobile feed. The rendered MP4 is in the repo's <code>video/</code> folder.</p>
+  <div class="frame" id="frame">
+    <div id="stage" aria-label="Vertical Kickstarter clip for the LVC Dream Cube">
+
+      <section class="scene" id="s-dark" data-scene="dark">
+        <h2 class="display center t1 in" data-l="0" data-ul="2" data-uo="-0.2">Close your eyes.</h2>
+        <h2 class="display center t2 in" data-l="2">Which side is <em>red</em>?</h2>
+        <div class="cube-wrap" style="left:90px; top:560px; width:760px; height:640px;">
+          <div class="cube mono" id="cube-dark" style="--s:400px"></div>
+        </div>
+        <p class="center shrug in" data-l="3" data-o="0.2">No idea…</p>
+      </section>
+
+      <section class="scene" id="s-feel" data-scene="feel">
+        <h2 class="display center in" data-l="4">Now feel it.</h2>
+        <div class="stack">
+          <div class="row in" data-l="4" data-o="1.3"><div class="chip" data-c="red" data-t="rings"></div><div><b>Rings</b><span>are red</span></div></div>
+          <div class="row in" data-l="5" data-o="0.9"><div class="chip" data-c="blue" data-t="dots"></div><div><b>Dots</b><span>are blue</span></div></div>
+          <div class="row in" data-l="5" data-o="3.0"><div class="chip" data-c="yellow" data-t="dome"></div><div><b>Dome</b><span>is yellow</span></div></div>
+        </div>
+      </section>
+
+      <section class="scene" id="s-key" data-scene="key">
+        <h2 class="display center in" data-l="6">Every colour has its own texture.</h2>
+        <div class="cube-wrap" style="left:120px; top:430px; width:690px; height:430px;">
+          <div class="cube" id="cube-key" style="--s:250px"></div>
+        </div>
+        <div class="grid" id="keygrid"></div>
+      </section>
+
+      <section class="scene" id="s-who" data-scene="who">
+        <canvas id="stars" width="1080" height="960"></canvas>
+        <h2 class="display center top in" data-l="7" data-o="0.1">Blind and low&#8209;vision kids solve it <em>by touch</em>.</h2>
+        <div class="moon in" data-l="7" data-o="3.2"></div>
+        <h2 class="display center bot in" data-l="7" data-o="3.2">You can play with the <em>lights off</em>.</h2>
+      </section>
+
+      <section class="scene" id="s-end" data-scene="end">
+        <div class="center brand">
+          <img class="in" data-l="8" src="img/lvc-logo.png" alt="Little Voice Club logo">
+          <h2 class="display in" data-l="8" data-o="0.1">LVC Dream Cube</h2>
+          <div class="tag in" data-l="8" data-o="0.6"><span>See it.</span><span>Feel it.</span><span>Solve it.</span></div>
+          <div class="act in" data-l="8" data-o="1.3">
+            <div class="qr"><img src="img/qr-kickstarter.svg" alt="QR code linking to the LVC Dream Cube Kickstarter page"></div>
+            <div class="right">
+              <div class="cta">Back us on Kickstarter</div>
+              <div class="scan">Scan to open<br>the project</div>
+            </div>
+          </div>
+          <div class="price in" data-l="8" data-o="1.6">US$24.99 · under US$9.99 for schools &amp; NGOs</div>
+        </div>
+        <div class="rainbow" style="bottom:0"></div>
+      </section>
+
+      <div id="captions"></div>
+    </div>
+  </div>
+  <div class="controls">
+    <button id="play" type="button">Play</button>
+    <input id="seek" type="range" min="0" max="29" step="0.01" value="0" aria-label="Seek">
+    <span class="time" id="time">0:00</span>
+    <button id="cc" class="ghost" type="button" aria-pressed="true">Captions on</button>
+  </div>
+  <audio id="vo" src="discovery.mp3" preload="auto"></audio>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="chipclip"><rect x="10" y="10" width="80" height="80" rx="12"/></clipPath>
+    <radialGradient id="domeg" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".35" stop-color="#fff" stop-opacity=".15"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></radialGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
+  </defs>
+</svg>
+
+<script src="discovery-timings.js"></script>
+<script>
+(() => {
+  const T = window.TIMINGS;
+  const COLORS = { white: "#f4f1ea", green: "#1f9d55", orange: "#f07a1a", red: "#d7263d", blue: "#1f6fd1", yellow: "#f5c518" };
+  const TEX = { white: "smooth", green: "frame", orange: "ridges", red: "rings", blue: "dots", yellow: "dome" };
+  const END = Math.ceil(T[T.length - 1].end + 3); // hold the QR end card
+
+  function relief(t) {
+    switch (t) {
+      case "frame": return `<rect x="24" y="24" width="52" height="52" rx="6" fill="none" stroke-width="9" STROKE/>`;
+      case "ridges": { let s = ""; for (let k = -60; k <= 100; k += 15) s += `<line x1="${k}" y1="100" x2="${k + 100}" y2="0" stroke-width="6" STROKE/>`; return `<g clip-path="url(#chipclip)">${s}</g>`; }
+      case "rings": return `<circle cx="50" cy="50" r="10" fill="none" stroke-width="6" STROKE/><circle cx="50" cy="50" r="22" fill="none" stroke-width="6" STROKE/><circle cx="50" cy="50" r="34" fill="none" stroke-width="6" STROKE/>`;
+      case "dots": { let s = ""; for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) s += `<circle cx="${26 + i * 16}" cy="${26 + j * 16}" r="5.4" FILL/>`; return s; }
+      default: return "";
+    }
+  }
+  function chip(c, t) {
+    const col = COLORS[c];
+    let body = `<rect x="4" y="4" width="92" height="92" rx="14" fill="${col}"/><rect x="10" y="10" width="80" height="80" rx="12" fill="${col}" stroke="rgba(0,0,0,.18)" stroke-width="1.5"/>`;
+    if (t === "dome") {
+      body += `<circle cx="52" cy="53" r="27" fill="rgba(0,0,0,.28)"/><circle cx="50" cy="50" r="26" fill="${col}"/><circle cx="50" cy="50" r="26" fill="url(#domeg)"/>`;
+    } else if (t !== "smooth") {
+      const r = relief(t);
+      body += '<g transform="translate(1.6 1.6)">' + r.replaceAll("STROKE", 'stroke="rgba(0,0,0,.32)"').replaceAll("FILL", 'fill="rgba(0,0,0,.32)"') + "</g>";
+      body += '<g transform="translate(-1 -1)">' + r.replaceAll("STROKE", 'stroke="rgba(255,255,255,.55)"').replaceAll("FILL", 'fill="rgba(255,255,255,.55)"') + "</g>";
+      body += r.replaceAll("STROKE", `stroke="${col}"`).replaceAll("FILL", `fill="${col}"`);
+    }
+    body += `<rect x="10" y="10" width="80" height="80" rx="12" fill="url(#gloss)"/>`;
+    return `<svg viewBox="0 0 100 100" aria-hidden="true">${body}</svg>`;
+  }
+  document.querySelectorAll("[data-c][data-t]").forEach(el => { el.innerHTML = chip(el.dataset.c, el.dataset.t); });
+
+  function rng(seed) { const next = () => (seed = (seed * 16807) % 2147483647) / 2147483647; for (let i = 0; i < 8; i++) next(); return next; }
+  function buildCube(el, seed) {
+    const r = rng(seed);
+    const all = Object.keys(COLORS).flatMap(c => Array(9).fill(c));
+    for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [all[i], all[j]] = [all[j], all[i]]; }
+    const h = parseFloat(getComputedStyle(el).getPropertyValue("--s")) / 2;
+    [`translateZ(${h}px)`, `rotateY(180deg) translateZ(${h}px)`, `rotateY(90deg) translateZ(${h}px)`, `rotateY(-90deg) translateZ(${h}px)`, `rotateX(90deg) translateZ(${h}px)`, `rotateX(-90deg) translateZ(${h}px)`].forEach((t, f) => {
+      const face = document.createElement("div");
+      face.className = "face"; face.style.transform = t;
+      face.innerHTML = all.slice(f * 9, f * 9 + 9).map(c => chip(c, TEX[c])).join("");
+      el.appendChild(face);
+    });
+  }
+  buildCube(document.getElementById("cube-dark"), 7);
+  buildCube(document.getElementById("cube-key"), 11);
+
+  const kg = document.getElementById("keygrid");
+  Object.keys(COLORS).forEach((c, i) => {
+    const d = document.createElement("div");
+    d.className = "in"; d.dataset.l = "6"; d.dataset.o = (0.5 + i * 0.25).toFixed(2);
+    d.innerHTML = chip(c, TEX[c]) + `<span>${TEX[c]}</span>`;
+    kg.appendChild(d);
+  });
+
+  const stars = Array.from({ length: 90 }, (_, i) => { const r = rng(500 + i); return { x: r() * 1080, y: 20 + r() * 900, s: 0.8 + r() * 2.4, p: r() * 6.28 }; });
+  const sctx = document.getElementById("stars").getContext("2d");
+  function drawStars(t) {
+    sctx.clearRect(0, 0, 1080, 960);
+    for (const st of stars) { sctx.globalAlpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * 1.6 + st.p)); sctx.fillStyle = "#fff"; sctx.beginPath(); sctx.arc(st.x, st.y, st.s, 0, 6.283); sctx.fill(); }
+    sctx.globalAlpha = 1;
+  }
+
+  const at = (l, o) => (T[+l] ? T[+l].start : 0) + (+o || 0);
+  const scenes = [...document.querySelectorAll(".scene")].map(el => {
+    const idx = T.findIndex(x => x.scene === el.dataset.scene);
+    return { el, start: idx <= 0 ? -1 : T[idx].start };
+  });
+  scenes.forEach((s, i) => { s.end = i < scenes.length - 1 ? scenes[i + 1].start : Infinity; });
+  const ins = [...document.querySelectorAll(".in")].map(el => ({ el, a: at(el.dataset.l, el.dataset.o), u: el.dataset.ul != null ? at(el.dataset.ul, el.dataset.uo) : Infinity }));
+  const clamp = v => Math.max(0, Math.min(1, v));
+  const ease = p => 1 - Math.pow(1 - p, 3);
+  const clean = s => s.replace(/\[[^\]]*\]\s*/g, "").trim();
+  const caps = document.getElementById("captions");
+  const CUES = T.flatMap((l, i) => {
+    const parts = clean(l.text).match(/[^.!?…]+(?:[.!?…]+|$)/g).map(x => x.trim()).filter(Boolean);
+    const merged = [];
+    for (const p of parts) (merged.length && (p.length < 12 || merged[merged.length - 1].length < 12)) ? merged[merged.length - 1] += " " + p : merged.push(p);
+    const total = merged.reduce((n, p) => n + p.length, 0);
+    const end = T[i + 1] ? T[i + 1].start : l.end + 0.4;
+    let a = l.start;
+    return merged.map((p, k) => { const b = k === merged.length - 1 ? end : a + (l.end - l.start) * p.length / total; const c = { who: l.who, text: p, a, b }; a = b; return c; });
+  });
+  let lastCap = null;
+
+  function render(t) {
+    for (const s of scenes) {
+      const o = Math.min(clamp((t - (s.start - 0.2)) / 0.4), clamp((s.end + 0.2 - t) / 0.4));
+      s.el.style.opacity = o;
+      s.el.style.visibility = o > 0 ? "visible" : "hidden";
+    }
+    for (const e of ins) {
+      const p = ease(clamp((t - e.a) / 0.5));
+      const q = ease(clamp((t - e.u) / 0.3));
+      e.el.style.opacity = p * (1 - q);
+      e.el.style.transform = `translateY(${(1 - p) * 40 - q * 20}px) scale(${0.94 + 0.06 * p})`;
+    }
+    document.getElementById("cube-dark").style.transform = `rotateX(-24deg) rotateY(${30 + t * 22}deg)`;
+    document.getElementById("cube-key").style.transform = `rotateX(-26deg) rotateY(${t * 30}deg)`;
+    if (t > 17 && t < 25) drawStars(t);
+    let cue = null;
+    for (const c of CUES) if (t >= c.a && t < c.b) cue = c;
+    if (cue !== lastCap) {
+      lastCap = cue;
+      caps.innerHTML = cue ? `<span class="cap"><span class="who ${cue.who}">${cue.who === "meera" ? "Meera" : "Arjun"}</span>${cue.text}</span>` : "";
+    }
+  }
+
+  const stage = document.getElementById("stage");
+  const frame = document.getElementById("frame");
+  const fit = () => { stage.style.transform = `scale(${frame.clientWidth / 1080})`; };
+  const ro = new ResizeObserver(fit);
+  ro.observe(frame);
+  fit();
+
+  const params = new URLSearchParams(location.search);
+  if (params.get("captions") === "0") stage.classList.add("nocap");
+  if (params.get("capture") === "1") {
+    ro.disconnect();
+    const defs = document.querySelector("svg defs").closest("svg");
+    document.body.style.cssText = "margin:0;padding:0;background:#000;overflow:hidden";
+    document.body.innerHTML = "";
+    document.body.append(defs, stage);
+    stage.style.transform = "none";
+    window.renderAt = t => render(t);
+    window.FILM_END = END;
+    render(0);
+    return;
+  }
+
+  document.getElementById("seek").max = END;
+  const vo = document.getElementById("vo"), play = document.getElementById("play"), seek = document.getElementById("seek"), time = document.getElementById("time");
+  let clock = 0, running = false, lastTs = 0;
+  const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+  function loop(ts) {
+    if (running) {
+      if (vo.paused || vo.ended) clock += (ts - lastTs) / 1000; else clock = vo.currentTime;
+      if (clock >= END) { running = false; play.textContent = "Play"; clock = END; }
+    }
+    lastTs = ts;
+    render(clock); seek.value = clock; time.textContent = `${fmt(clock)} / ${fmt(END)}`;
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  function toggle() {
+    if (running) { running = false; vo.pause(); play.textContent = "Play"; return; }
+    if (clock >= END) clock = 0;
+    running = true; play.textContent = "Pause";
+    if (vo.duration && clock < vo.duration) { vo.currentTime = clock; vo.play().catch(() => {}); }
+  }
+  play.addEventListener("click", toggle);
+  seek.addEventListener("input", () => { clock = +seek.value; if (vo.duration && clock < vo.duration) vo.currentTime = clock; });
+  const cc = document.getElementById("cc");
+  cc.addEventListener("click", () => { const off = stage.classList.toggle("nocap"); cc.textContent = off ? "Captions off" : "Captions on"; cc.setAttribute("aria-pressed", String(!off)); });
+  document.addEventListener("keydown", e => { if (e.code === "Space" && e.target.tagName !== "INPUT") { e.preventDefault(); toggle(); } });
+})();
+</script>
+</body>
+</html>

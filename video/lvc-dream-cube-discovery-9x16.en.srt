@@ -1,0 +1,47 @@
+1
+00:00:00,080 --> 00:00:01,120
+Meera: Close your eyes.
+
+2
+00:00:01,940 --> 00:00:03,500
+Arjun: Okay... closed.
+
+3
+00:00:04,380 --> 00:00:05,280
+Meera: Which side is red?
+
+4
+00:00:06,460 --> 00:00:07,160
+Arjun: No idea!
+
+5
+00:00:08,039 --> 00:00:11,040
+Meera: Feel it. The rings... are red.
+
+6
+00:00:11,960 --> 00:00:13,710
+Arjun: Wait... dots are blue.
+
+7
+00:00:13,710 --> 00:00:15,620
+Arjun: And this dome... yellow!
+
+8
+00:00:16,580 --> 00:00:18,600
+Meera: Every colour has its own texture.
+
+9
+00:00:19,540 --> 00:00:22,615
+Arjun: So blind and low-vision kids can solve it by touch...
+
+10
+00:00:22,615 --> 00:00:24,820
+Arjun: and I can play it with the lights off.
+
+11
+00:00:25,860 --> 00:00:26,997
+Meera: LVC Dream Cube.
+
+12
+00:00:26,997 --> 00:00:28,740
+Meera: Back us on Kickstarter!

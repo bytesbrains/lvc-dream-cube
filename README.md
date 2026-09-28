@@ -4,8 +4,9 @@
 
 Each colour on the cube gets its own 3D tactile pattern, so every face can be recognised through touch, not only sight. We 3D-printed small pattern chips and glued them onto an ordinary 3×3 puzzle cube. That's the whole trick, and this repo has everything you need to make one.
 
-🌐 **Landing page:** https://bytesbrains.github.io/lvc-dream-cube/
-🚀 **Kickstarter:** [LVC Dream Cube on Kickstarter](https://www.kickstarter.com/projects/bytesbrains/lvc-dream-cube-the-puzzle-cube-you-can-solve-in-the-dark): **live now!** Back it, or share it with someone who would love it.
+🌐 **Landing page:** https://bytesbrains.github.io/lvc-dream-cube/  
+🚀 **Kickstarter:** [LVC Dream Cube on Kickstarter](https://www.kickstarter.com/projects/bytesbrains/lvc-dream-cube-the-puzzle-cube-you-can-solve-in-the-dark): **live now!** Back it, or share it with someone who would love it.  
+📣 **Follow @LittleVoiceClub:** [X](https://x.com/LittleVoiceClub) · [Instagram](https://www.instagram.com/littlevoiceclub/) · [YouTube](https://www.youtube.com/@LittleVoiceClub)
 
 <p align="center">
   <img src="docs/img/cube-scrambled.jpg" alt="A scrambled LVC Dream Cube. Every coloured square carries a raised chip: grey dots, yellow domes, red rings, green frames, orange ridges and smooth white." width="420">
